@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>BLOCK CONTENT {{ session["username"] }} {{session["user_id"] }} {{ session["todo_list_id"] }}</h1>
+    {% for list in lists %}
+    <a class="btn btn-default" href="{{ url_for("list_todo_items", choosed_list_id=list.todo_list_id) }}" role="button">{{ list.todo_list_name }}</a>
+    {% endfor %}
+
+    {% if list_of_items %}
+    {% for item in list_of_items %}
+    <p>{{ item.name }}</p>
+    {% endfor %}
+    {% endif %}
+{% endblock %}

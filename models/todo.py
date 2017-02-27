@@ -1,19 +1,29 @@
 import sqlite3
+# from models.user import User
 
 
 class Todo:
     """ Class representing todo item."""
 
     def __init__(self, id, name, done=False):
-        pass
+        self.id = id
+        self.name = name
+        self.done = done
 
     def toggle(self):
         """ Toggles item's state """
-        pass
+        if self.done:
+            self.done = False
+        else:
+            self.done = True
 
     def save(self):
         """ Saves/updates todo item in database """
-        pass
+        conn = sqlite3.connect("db/db.sqlite")
+        cursor = conn.execute("select * from todo_items where todo_list_id='{}'".format(list_id))
+        for row in cursor.fetchall():
+            lists.append(Todo(row[0], row[1], row[3]))
+        conn.close()
 
     def delete(self):
         """ Removes todo item from the database """

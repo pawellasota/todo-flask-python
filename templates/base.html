@@ -18,20 +18,21 @@
     <div class="row">
         <div class="col-md-12" style="background-color:lavender;"><h1>LOGO</h1></div>
     </div>
-    {% if True %}
         <div class="row">
             <div class="col-md-3" style="background-color:yellow;">
                 <div class="row" style="background-color:green;">Logged as {{ session["username"] }}
-                    <a class="btn btn-default" href="{{ url_for("logout") }}" role="button">Logout</a></div>
-                <div class="row" style="background-color:darkolivegreen;">NAV</div>
+                    <a class="btn btn-default" href="{{ url_for("logout") }}" role="button">Logout</a>
+                </div>
+                <div class="row" style="background-color:darkolivegreen;">NAV
+                </div>
+            <div>
+                <a class="btn btn-default" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a></div>
+                <a class="btn btn-default" href="{{ url_for("add_list") }}" role="button">Add new list</a>
             </div>
             <div class="col-md-9" style="background-color:lavenderblush;">{% block content %}{% endblock %}</div>
         </div>
-    {% else %}
         <div class="row">
-{#            <div class="col-md-12" style="background-color:lavenderblush;">{% block content %}{% endblock %}</div>#}
         </div>
-    {% endif %}
     <div class="row">
         <div class="col-md-12" style="background-color:lavenderblush;">Footer</div>
     </div>

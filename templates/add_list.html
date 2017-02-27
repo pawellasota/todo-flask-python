@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>BLOCK CONTENT {{ session["username"] }} {{session["user_id"] }} {{ session["todo_list_id"] }}</h1>
+    <form action="{{ url_for("add_list") }}" method="post">
+        <label>Enter name for new list <input type="text" name="list_name"></label>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+{% endblock %}

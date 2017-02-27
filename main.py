@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, url_for, Response, redirect, session, g, flash
-from flask_login import login_required, current_user, LoginManager, UserMixin
 from models.todo import Todo
 from models.user import User
 import os
@@ -8,21 +7,27 @@ import os
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-@app.route("/", methods=["GET", "POST"])
-@app.route("/<username>")
-def list(username=None):
+@app.route("/list_todo_lists")
+def list_todo_lists():
     """ Shows list of todo items stored in the database.
     """
-    if "username" in session:
-        redirect(url_for("index"))
-    return redirect(url_for("login"))
+    lists = app.config.logged_user.get_lists()
+    if lists:
+        return render_template("lists.html", lists=lists)
+    return redirect(url_for("index"))
 
+@app.route("/list_todo_items/<choosed_list_id>")
+def list_todo_items(choosed_list_id=None):
+    if choosed_list_id:
+        lists = app.config.logged_user.get_to_do_items(choosed_list_id)
+        return render_template("lists.html", list_of_items=lists)
 
+@app.route("/")
 @app.route("/index")
 @app.route("/index/<username>")
-def index(username):
+def index(username=None):
     if g.username:
-        return render_template("index.html", username=username)
+        return render_template("index.html", username=g.username)
     return redirect(url_for("login"))
 
 @app.before_request
@@ -48,6 +53,13 @@ def logout():
     session.pop("user_id", None)
     session.pop("todo_list_id", None)
     return redirect(url_for("login"))
+
+@app.route("/addlist", methods=["GET", "POST"])
+def add_list():
+    if request.method == "POST":
+        app.config.logged_user.add_list(request.form["list_name"])
+        return redirect(url_for("list_todo_lists"))
+    return render_template("add_list.html")
 
 @app.route("/add", methods=['GET', 'POST'])
 def add():
@@ -85,11 +97,14 @@ def login():
             session.pop("username", None)
             session.pop("user_id", None)
             session.pop("todo_list_id", None)
+            session.pop("password", None)
         user = User.get_user(request.form["username"], request.form["password"])
         if user:
             session["username"] = user.username
+            session["password"] = user.password
             session["user_id"] = user.user_id
             session["todo_list_id"] = user.todo_list_id
+            app.config.logged_user = user
             return redirect(url_for("index", username=user.username))
         else:
             return redirect(url_for("login"))
