@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% if title %}
+    <title>{{ title }} - ToDo</title>
+    {% else %}
+    <title>ToDo</title>
+    {% endif %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12" style="background-color:lavender;"><h1>LOGO</h1></div>
+    </div>
+    {% if True %}
+        <div class="row">
+            <div class="col-md-3" style="background-color:yellow;">
+                <div class="row" style="background-color:green;">Logged as {{ session["username"] }}</div>
+                <div class="row" style="background-color:darkolivegreen;">NAV</div>
+            </div>
+            <div class="col-md-9" style="background-color:lavenderblush;">{% block content %}{% endblock %}</div>
+        </div>
+    {% else %}
+        <div class="row">
+{#            <div class="col-md-12" style="background-color:lavenderblush;">{% block content %}{% endblock %}</div>#}
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12" style="background-color:lavenderblush;">Footer</div>
+    </div>
+</div>
+</body>
+</html>
