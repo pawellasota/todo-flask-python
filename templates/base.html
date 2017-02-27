@@ -21,7 +21,8 @@
     {% if True %}
         <div class="row">
             <div class="col-md-3" style="background-color:yellow;">
-                <div class="row" style="background-color:green;">Logged as {{ session["username"] }}</div>
+                <div class="row" style="background-color:green;">Logged as {{ session["username"] }}
+                    <a class="btn btn-default" href="{{ url_for("logout") }}" role="button">Logout</a></div>
                 <div class="row" style="background-color:darkolivegreen;">NAV</div>
             </div>
             <div class="col-md-9" style="background-color:lavenderblush;">{% block content %}{% endblock %}</div>

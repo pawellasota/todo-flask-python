@@ -9,29 +9,20 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 @app.route("/", methods=["GET", "POST"])
-def list(user=None):
+@app.route("/<username>")
+def list(username=None):
     """ Shows list of todo items stored in the database.
     """
-    if request.method == "POST":
-        session.pop("username", None)
-        session.pop("user_id", None)
-        session.pop("todo_list_id", None)
-        user = User.get_user(request.form["username"], request.form["password"])
-        if user:
-            session["username"] = user.username
-            session["user_id"] = user.user_id
-            session["todo_list_id"] = user.todo_list_id
-            return redirect(url_for("index"))
-        else:
-            return render_template("login.html", error="Invalid input")
-
-    return render_template("login.html", title="Login")
+    if "username" in session:
+        redirect(url_for("index"))
+    return redirect(url_for("login"))
 
 
 @app.route("/index")
-def index():
+@app.route("/index/<username>")
+def index(username):
     if g.username:
-        return render_template("index.html")
+        return render_template("index.html", username=username)
     return redirect(url_for("login"))
 
 @app.before_request
@@ -51,10 +42,12 @@ def get_session():
     else:
         return "Not logged in"
 
-@app.route("/dropsession")
-def drop_session():
-    session.pop("user", None)
-    return "Dropped"
+@app.route("/logout")
+def logout():
+    session.pop("username", None)
+    session.pop("user_id", None)
+    session.pop("todo_list_id", None)
+    return redirect(url_for("login"))
 
 @app.route("/add", methods=['GET', 'POST'])
 def add():
@@ -87,15 +80,20 @@ def toggle(todo_id):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Here we use a class of some kind to represent and validate our
-    # client-side form data. For example, WTForms is a library that will
-    # handle this for us, and we use a custom LoginForm to validate.
     if request.method == "POST":
-        _user = User.get_user(request.form["email"], request.form["password"])
-        if _user:
-            return redirect("/"+_user.username)
+        if "username" in session:
+            session.pop("username", None)
+            session.pop("user_id", None)
+            session.pop("todo_list_id", None)
+        user = User.get_user(request.form["username"], request.form["password"])
+        if user:
+            session["username"] = user.username
+            session["user_id"] = user.user_id
+            session["todo_list_id"] = user.todo_list_id
+            return redirect(url_for("index", username=user.username))
         else:
-            return redirect('/')
+            return redirect(url_for("login"))
+    return render_template("login.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
