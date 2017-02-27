@@ -1,13 +1,62 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>BLOCK CONTENT {{ session["username"] }} {{session["user_id"] }} {{ session["todo_list_id"] }}</h1>
-    {% for list in lists %}
-    <a class="btn btn-default" href="{{ url_for("list_todo_items", choosed_list_id=list.todo_list_id) }}" role="button">{{ list.todo_list_name }}</a>
-    {% endfor %}
+    {% if choosed_list_id %}
+        <h1>List: {{ choosed_list_name }}</h1>
+    {% else %}
+        <h1>Yours Todo lists {{ choosed_list_id }}</h1>
+    {% endif %}
+    {% if lists %}
+        {% for list in lists %}
+            <a class="btn btn-default" href="{{ url_for("list_todo_items", choosed_list_id=list.todo_list_id) }}" role="button">{{ list.todo_list_name }}</a>
+        {% endfor %}
+    {% endif %}
 
     {% if list_of_items %}
-    {% for item in list_of_items %}
-    <p>{{ item.name }}</p>
-    {% endfor %}
+    <form method="post">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Creation date</th>
+              <th>Todo name</th>
+              <th>Status</th>
+              <th>Due Date</th>
+              <th>Priority</th>
+
+            </tr>
+          </thead>
+          <tbody>
+
+        {% for item in list_of_items %}
+            <tr>
+              <td>2017-01-23</td>
+              <td>{{ item.name }}</td>
+              {% if item.done=="True" %}
+              <td><input type="checkbox" name="item_check" checked="checked" onchange="window.location='{{ url_for("toggle", todo_id=item.id, checked="False") }}';"></td>
+              {% else %}
+              <td><input type="checkbox" name="item_check" onchange="window.location='{{ url_for("toggle", todo_id=item.id, checked="True") }}';"></td>
+              {% endif %}
+
+              <td>{{ item.due_date }}</td>
+              <td><input type="range" name="priority" min="0" max="10" value="{{ item.priority }}"></td>
+              <td><a class="btn btn-default" href="{{ url_for("remove", todo_id=item.id, choosed_list_id=choosed_list_id) }}" id="remove_{{ item.id }}" role="button">Remove</a></td>
+              <td><a class="btn btn-default" href="{{ url_for("edit", todo_id=item.id, choosed_list_id=choosed_list_id) }}" role="button">Edit</a ></td>
+            </tr>
+        {% endfor %}
+          </tbody>
+        </table>
+        <a class="btn btn-default" href="{{ url_for("add", choosed_list_id=choosed_list_id) }}" role="button">Add new item</a>
+    </form>
+    {% elif choosed_list_id  %}
+        <a class="btn btn-default" href="{{ url_for("add", choosed_list_id=choosed_list_id) }}" role="button">Add new item</a>
     {% endif %}
 {% endblock %}
+
+{#
+            <script type="text/javascript">
+     <!--
+        function Redirect() {
+           window.location='{{ url_for("toggle", todo_id=item.id) }}';
+        }
+     //-->
+  </script>
+#}

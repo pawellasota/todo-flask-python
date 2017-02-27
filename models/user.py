@@ -1,6 +1,8 @@
 import sqlite3
 from models.todo_list import TodoList
 from models.todo import Todo
+import datetime
+
 
 class User:
     path = 'db/db.sqlite'
@@ -36,7 +38,7 @@ class User:
         conn = sqlite3.connect(User.path)
         cursor = conn.execute("select * from todo_items where todo_list_id='{}'".format(list_id))
         for row in cursor.fetchall():
-            lists.append(Todo(row[0], row[1], row[3]))
+            lists.append(Todo(row[1], row[2], row[4], row[5], id=row[0], done=row[3]))
         conn.close()
         return lists
 
@@ -46,6 +48,24 @@ class User:
         conn.commit()
         conn.close()
 
-    @classmethod
-    def add_todo_list(cls, todo_list_name, user_id):
-        pass
+    def remove_item(self, item_id):
+        conn = sqlite3.connect(User.path)
+        conn.execute("delete from todo_items where item_id='{}'".format(item_id))
+        conn.commit()
+        conn.close()
+
+    def add_todo_item(self, todo):
+        conn = sqlite3.connect(User.path)
+        creation_date = datetime.date.today()
+        conn.execute("insert into todo_items (item_content, todo_list_id, done, priority, due_date,"
+                     "creation_date) values('{}','{}','{}','{}','{}','{}')"
+                     .format(todo.name, todo.list_id, False, todo.priority, todo.due_date, creation_date))
+        conn.commit()
+        conn.close()
+
+    def get_list_name_by_id(self, id):
+        conn = sqlite3.connect(User.path)
+        cursor = conn.execute("select todo_list_name from todo_lists where todo_list_id='{}'".format(id))
+        name = cursor.fetchone()[0]
+        conn.close()
+        return name
