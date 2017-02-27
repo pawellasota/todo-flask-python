@@ -6,8 +6,41 @@
     {% endfor %}
 
     {% if list_of_items %}
-    {% for item in list_of_items %}
-    <p>{{ item.name }}</p>
-    {% endfor %}
+    <form method="post">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Creation date</th>
+              <th>Todo name</th>
+              <th>Status</th>
+              <th>Due Date</th>
+              <th>Priority</th>
+
+            </tr>
+          </thead>
+          <tbody>
+
+        {% for item in list_of_items %}
+            <tr>
+              <td>2017-01-23</td>
+              <td>{{ item.name }}</td>
+              {% if item.done %}
+              <td><input type="checkbox" name="item_check" checked="checked"></td>
+              {% else %}
+              <td><input type="checkbox" name="item_check"></td>
+              {% endif %}
+
+              <td>2017-05-21</td>
+              <td><input type="range" name="priority" min="0" max="10"></td>
+              <td><a class="btn btn-default" href="{{ url_for("remove", todo_id=item.id) }}" id="remove_{{ item.id }}" role="button">Remove</a></td>
+              <td><a class="btn btn-default" href="#" id="edit_{{ item.id }}" role="button">Edit</a ></td>
+              <td><a class="btn btn-default" href="#" id="change_due_{{ item.id }}"role="button">Change due</a></td>
+            </tr>
+        {% endfor %}
+          </tbody>
+        </table>
+        <a class="btn btn-default" href="{{ url_for("add", choosed_list_id=choosed_list_id) }}" role="button">Add new item</a>
+    </form>
+{#        <p>{{ item.name }}</p>#}
     {% endif %}
 {% endblock %}

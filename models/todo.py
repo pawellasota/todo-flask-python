@@ -1,14 +1,19 @@
 import sqlite3
+import datetime
 # from models.user import User
 
 
 class Todo:
     """ Class representing todo item."""
 
-    def __init__(self, id, name, done=False):
+    def __init__(self, name, list_id, priority, due_date, id=None, done=False):
         self.id = id
         self.name = name
+        self.list_id = list_id
+        self.priority = priority
+        self.due_date = due_date
         self.done = done
+        self.creation_date = datetime.date.today()
 
     def toggle(self):
         """ Toggles item's state """
