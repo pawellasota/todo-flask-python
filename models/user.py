@@ -65,6 +65,8 @@ class Manager(User):
     def get_user_list_names(self, user_id):
         list_names = []
         conn = sqlite3.connect(User.path)
+        # cursor = conn.execute("SELECT todo_list_name FROM todo_lists, lists_allowed where todo_list_id in"
+        #                       " (select list_id from lists_allowed where user_id='{}') group by todo_lists.todo_list_name".format(user_id))
         cursor = conn.execute("SELECT todo_list_name FROM todo_lists, lists_allowed "
                               "where lists_allowed.user_id='{}' and lists_allowed.list_id=todo_lists.todo_list_id".format(user_id))
         for row in cursor.fetchall():
@@ -107,4 +109,3 @@ class Manager(User):
                               .format(self.get_user_id_by_name(choosed_user), self.get_list_id_by_name(choosed_list)))
         conn.commit()
         conn.close()
-

@@ -1,6 +1,7 @@
 import sqlite3
 import datetime
 
+
 class Todo:
     """ Class representing todo item."""
     path = 'db/db.sqlite'

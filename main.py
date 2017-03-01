@@ -26,7 +26,6 @@ def list_todo_items(choosed_list_id):
         list_of_items = todo_list.get_to_do_items()
         return render_template("lists.html", list_of_items=list_of_items, choosed_list=todo_list)
 
-
 @app.route("/")
 @app.route("/index")
 def index():
