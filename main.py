@@ -1,11 +1,14 @@
 from flask import Flask, render_template, request, url_for, Response, redirect, session, g, flash
 from models.todo import Todo
-from models.user import User
+from models.user import User, Manager
+from models.todo_list import TodoList
+from flask_jsglue import JSGlue
 import os
 
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+jsglue = JSGlue(app)
 
 @app.route("/list_todo_lists")
 def list_todo_lists():
@@ -17,29 +20,50 @@ def list_todo_lists():
     return redirect(url_for("index"))
 
 @app.route("/list_todo_items/<choosed_list_id>")
-def list_todo_items(choosed_list_id=None):
+def list_todo_items(choosed_list_id):
     if choosed_list_id:
-        lists = app.config.logged_user.get_to_do_items(choosed_list_id)
-        choosed_list_name = app.config.logged_user.get_list_name_by_id(choosed_list_id)
-        return render_template("lists.html", list_of_items=lists, choosed_list_id=choosed_list_id, choosed_list_name=choosed_list_name)
+        todo_list = TodoList.get_by_id(choosed_list_id)
+        list_of_items = todo_list.get_to_do_items()
+        return render_template("lists.html", list_of_items=list_of_items, choosed_list=todo_list)
 
 @app.route("/")
 @app.route("/index")
-@app.route("/index/<username>")
-def index(username=None):
-    if g.username:
-        return render_template("index.html", username=g.username)
-    return redirect(url_for("login"))
+def index():
+    if "username" in session:
+        if session["type"] == "manager":
+            return redirect("manager")
+        if g.username:
+            return render_template("index.html")
+        else:
+            return redirect(url_for("login"))
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/manager", methods=["GET", "POST"])
+def manager():
+    if request.args.get("choosed_user"):
+        app.config.logged_user.remove_access_to_list(request.args.get("choosed_user"), request.args.get("choosed_list"))
+        return redirect("manager")
+    users_list_names = []
+    users_list = app.config.logged_user.get_all_users()
+    for user in users_list:
+        users_list_names.append([user.user_id, app.config.logged_user.get_user_list_names(user.user_id)])
+    if request.method == "POST":
+        app.config.logged_user.assign_list_to_user(request.form["user_to_add"], request.form["list_to_add"])
+        users_list_names = []
+        for user in users_list:
+            users_list_names.append([user.user_id, app.config.logged_user.get_user_list_names(user.user_id)])
+    return render_template("manager.html", users_list=users_list, user_list_names=users_list_names)
 
 @app.before_request
 def before_request():
     g.username = None
     g.user_id = None
-    g.todo_list_id = None
+    # g.todo_list_id = None
     if "username" in session:
         g.username = session["username"]
         g.user_id = session["user_id"]
-        g.todo_list_id = session["todo_list_id"]
+        # g.todo_list_id = session["todo_list_id"]
 
 @app.route("/getsession")
 def get_session():
@@ -71,32 +95,38 @@ def add(choosed_list_id):
     if request.method == "POST":
         new_todo_item = Todo(request.form["todo_name"], choosed_list_id, request.form["todo_priority"],
                              request.form["todo_due_date"])
-        app.config.logged_user.add_todo_item(new_todo_item)
+        TodoList.add_todo_item(new_todo_item)
         return redirect(url_for("list_todo_items", choosed_list_id=choosed_list_id))
     return render_template("add_item.html")
 
-@app.route("/remove/<todo_id><choosed_list_id>")
-def remove(todo_id, choosed_list_id):
+@app.route("/remove/<todo_id>")
+def remove(todo_id):
     """ Removes todo item with selected id from the database """
-    app.config.logged_user.remove_item(todo_id)
-    return redirect(url_for("list_todo_items", choosed_list_id=choosed_list_id))
+    todo = Todo.get_by_id(todo_id)
+    todo.delete()
+    return redirect(url_for("list_todo_items", choosed_list_id=todo.list_id))
 
+@app.route("/remove_list/<choosed_list_id>")
+def remove_list(choosed_list_id):
+    list = TodoList.get_by_id(choosed_list_id)
+    list.delete()
+    return redirect("list_todo_lists")
 
-@app.route("/edit/<todo_id><choosed_list_id>", methods=['GET', 'POST'])
-def edit(todo_id, choosed_list_id):
+@app.route("/edit/<todo_id>", methods=['GET', 'POST'])
+def edit(todo_id):
     """ Edits todo item with selected id in the database
     If the method was GET it should show todo item form.
     If the method was POST it shold update todo item in database.
     """
+    todo = Todo.get_by_id(todo_id)
     if request.method == "POST":
-        todo = Todo.get_by_id(todo_id)
         todo.name = request.form["todo_name"]
         todo.due_date = request.form["todo_due_date"]
         todo.priority = request.form["todo_priority"]
         todo.save()
-        return redirect(url_for("list_todo_items", choosed_list_id=choosed_list_id))
-    choosed_list_name = app.config.logged_user.get_list_name_by_id(choosed_list_id)
-    return render_template("edit_todo.html", todo_id=todo_id, choosed_list_id=choosed_list_id, choosed_list_name=choosed_list_name)
+        return redirect(url_for("list_todo_items", choosed_list_id=todo.list_id))
+    choosed_list_name = TodoList.get_list_name_by_id(todo.list_id)
+    return render_template("edit_todo.html", todo=todo, choosed_list_name=choosed_list_name)
 
 
 @app.route("/toggle/<todo_id>, <checked>")
@@ -114,19 +144,19 @@ def toggle(todo_id, checked):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
-        if "username" in session:
-            session.pop("username", None)
-            session.pop("user_id", None)
-            session.pop("todo_list_id", None)
-            session.pop("password", None)
+        # if "username" in session:
+        #     session.pop("username", None)
+        #     session.pop("user_id", None)
+        #     session.pop("todo_list_id", None)
+        #     session.pop("password", None)
         user = User.get_user(request.form["username"], request.form["password"])
         if user:
             session["username"] = user.username
-            session["password"] = user.password
+            session["type"] = user.type
             session["user_id"] = user.user_id
-            session["todo_list_id"] = user.todo_list_id
+            # session["todo_list_id"] = user.todo_list_id
             app.config.logged_user = user
-            return redirect(url_for("index", username=user.username))
+            return redirect(url_for("index"))
         else:
             return redirect(url_for("login"))
     return render_template("login.html")

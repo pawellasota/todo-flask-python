@@ -1,6 +1,5 @@
 import sqlite3
 import datetime
-# from models.user import User
 
 
 class Todo:
@@ -33,15 +32,10 @@ class Todo:
 
     def delete(self):
         """ Removes todo item from the database """
-        pass
-
-    @classmethod
-    def get_all(cls):
-        """ Retrieves all Todos form database and returns them as list.
-        Returns:
-            list(Todo): list of all todos
-        """
-        pass
+        conn = sqlite3.connect(Todo.path)
+        conn.execute("delete from todo_items where item_id='{}'".format(self.id))
+        conn.commit()
+        conn.close()
 
     @classmethod
     def get_by_id(cls, id):
