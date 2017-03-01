@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}
+    Manager page
+{% endblock %}
+{% block head %}
+    {{ super() }}
+    {{ JSGlue.include() }}
+{% endblock %}
+{% block navbar %}
+    <a class="btn btn-default" href="{{ url_for("list_todo_lists") }}" role="button">Manage users lists</a>
+{% endblock %}
+{% block content %}
+    <h1>Manager menu</h1>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>User_id</th>
+              <th>User name</th>
+              <th>Allowed lists</th>
+            </tr>
+          </thead>
+          <tbody>
+        {% for user in users_list %}
+            <tr>
+              <td>{{ user.user_id }}</td>
+              <td>{{ user.username }}</td>
+                {% for list in user_list_names %}
+                  {% if list[0] == user.user_id %}
+                      <td>
+                      {% for item in list[1] %}
+                        <p>{{ item[0] }}</p>
+                      {% endfor %}
+                      </td>
+                  {% endif %}
+              {% endfor %}
+             </tr>
+        {% endfor %}
+          </tbody>
+        </table>
+    <form method="POST" name="assign_list" action="{{ url_for("manager") }}">
+        <label>Choose user
+        <select class="form-control" name="user_to_add" id="user_to_add">
+            {% for user in users_list %}
+                <option>{{ user.username }}</option>
+            {% endfor %}
+        </select>
+        </label>
+        <label>Choose list
+        <select class="form-control" name="list_to_add" id="list_to_add">
+
+            {% for list in user_list_names %}
+                {% for item in list[1] %}
+                        <option>{{ item[0] }}</option>
+                {% endfor %}
+            {% endfor %}
+        </select>
+        </label>
+        <button class="btn btn-default" type="submit">Assign list to user</button>
+        <button class="btn btn-default" onclick="return Remove()">Remove</button>
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
+
+
