@@ -3,7 +3,6 @@
     <div><a class="btn btn-default" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a></div>
     <div><a class="btn btn-default" href="{{ url_for("add_list") }}" role="button">Add new list</a></div>
 {% endblock %}
-
 {% block content %}
     <h1>BLOCK CONTENT {{ session["username"] }} {{session["user_id"] }} {{ session["todo_list_id"] }}</h1>
     <form method="post">

@@ -3,6 +3,7 @@ import datetime
 from models.todo import Todo
 
 
+
 class TodoList:
     path = 'db/db.sqlite'
 
