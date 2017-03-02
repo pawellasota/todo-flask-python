@@ -9,24 +9,43 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         <title>{% block title %}{% endblock %}</title>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
     {% endblock %}
 </head>
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-12" style="background-color:lavender;"><h1>LOGO</h1></div>
+        <div class="row back">
+            <div class="col-md-2 vcenter"><img src="{{ url_for('static', filename='img/ok.png') }}"/></div>
+            <div class="col-md-9 vcenter"><h1 id="logo">Todo App</h1></div>
         </div>
-        <div class="row">
-            <div class="col-md-3" style="background-color:yellow;">
-                <div class="row" style="background-color:green;">Logged as {{ session["username"] }}
-                    <a class="btn btn-default" href="{{ url_for("logout") }}" role="button">Logout</a>
-                </div>
-                <div class="row">{% block navbar %}{% endblock %}</div>
+        <div class="row" style="background-color: white;">
+        {% block main_content %}
+            <div class="col-md-3 module_border">
+                    <div class="">{% block logged %}</div>
+                        <img src="{{ url_for('static', filename='img/user.png') }}"/>
+                        <div class="row">Logged as <strong>{{ session["username"] }}</strong></div>
+                        <div class="row"><a class="btn btn-default" href="{{ url_for("logout") }}" role="button">Logout</a></div>
+                    {% endblock %}
+                    <div class="row">{% block navbar %}{% endblock %}</div>
             </div>
-            <div class="col-md-9" style="background-color:lavenderblush;">{% block content %}{% endblock %}</div>
+            <div class="col-md-9 module_border">
+                <div class="row">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        {% endblock %}
         </div>
-        <div class="row">
-            {% block footer %}<div class="col-md-12" style="background-color:lavenderblush;">Footer</div>{% endblock %}
+
+        <div class="row text-centered footer-height">
+            <div class="col-md-12">
+            {% block footer %}Copyright &copy; Paweł Lasota 2017{% endblock %}
+            </div>
         </div>
     </div>
 {% block scripts %}
