@@ -46,6 +46,7 @@ def manager():
         return redirect("manager")
     users_list_names = []
     users_list = app.config.logged_user.get_all_users()
+    full_list = app.config.logged_user.get_all_lists()
     for user in users_list:
         users_list_names.append([user.user_id, app.config.logged_user.get_user_list_names(user.user_id)])
     if request.method == "POST":
@@ -53,7 +54,7 @@ def manager():
         users_list_names = []
         for user in users_list:
             users_list_names.append([user.user_id, app.config.logged_user.get_user_list_names(user.user_id)])
-    return render_template("manager.html", users_list=users_list, user_list_names=users_list_names)
+    return render_template("manager.html", users_list=users_list, user_list_names=users_list_names, full_list=full_list)
 
 @app.before_request
 def before_request():

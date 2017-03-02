@@ -74,6 +74,16 @@ class Manager(User):
         conn.close()
         return list_names
 
+    def get_all_lists(self):
+        list_names = []
+        conn = sqlite3.connect(User.path)
+        cursor = conn.execute("SELECT todo_list_name FROM todo_lists")
+        for row in cursor.fetchall():
+            list_names.append(row)
+        conn.close()
+        return list_names
+
+
     def get_user_id_by_name(self, username):
         conn = sqlite3.connect(User.path)
         cursor = conn.execute("select user_id from users where username='{}'".format(username))
