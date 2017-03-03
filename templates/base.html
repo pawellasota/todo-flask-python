@@ -20,7 +20,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="row back">
+        <div class="row">
             <div class="col-md-2 vcenter"><img src="{{ url_for('static', filename='img/ok.png') }}"/></div>
             <div class="col-md-9 vcenter"><h1 id="logo">Todo App</h1></div>
         </div>
@@ -30,7 +30,7 @@
                     <div class="">{% block logged %}</div>
                         <img src="{{ url_for('static', filename='img/user.png') }}"/>
                         <div class="row">Logged as <strong>{{ session["username"] }}</strong></div>
-                        <div class="row"><a class="btn btn-default" href="{{ url_for("logout") }}" role="button">Logout</a></div>
+                        <div class="row"><a class="btn btn-default button-max-width" href="{{ url_for("logout") }}" role="button">Logout</a></div>
                     {% endblock %}
                     <div class="row">{% block navbar %}{% endblock %}</div>
             </div>

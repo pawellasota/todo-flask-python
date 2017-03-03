@@ -34,7 +34,7 @@ class TodoList:
         conn = sqlite3.connect(TodoList.path)
         cursor = conn.execute("select * from todo_items where todo_list_id='{}' order by priority desc".format(self.todo_list_id))
         for row in cursor.fetchall():
-            lists.append(Todo(row[1], row[2], row[4], row[5], id=row[0], done=row[3]))
+            lists.append(Todo(row[1], row[2], row[4], row[5], id=row[0], done=row[3], creation_date=row[6]))
         conn.close()
         return lists
 

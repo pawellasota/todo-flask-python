@@ -100,8 +100,9 @@ def add(choosed_list_id):
 def remove(todo_id):
     """ Removes todo item with selected id from the database """
     todo = Todo.get_by_id(todo_id)
+    choosed_list_id = todo.list_id
     todo.delete()
-    return redirect(url_for("list_todo_items", choosed_list_id=todo.list_id))
+    return redirect(url_for("list_todo_items", choosed_list_id=choosed_list_id))
 
 @app.route("/remove_list/<choosed_list_id>")
 def remove_list(choosed_list_id):

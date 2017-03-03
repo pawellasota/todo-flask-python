@@ -6,14 +6,14 @@ class Todo:
     """ Class representing todo item."""
     path = 'db/db.sqlite'
 
-    def __init__(self, name, list_id, priority, due_date, id=None, done=False):
+    def __init__(self, name, list_id, priority, due_date, id=None, done=False, creation_date=None):
         self.id = id
         self.name = name
         self.list_id = list_id
         self.priority = priority
         self.due_date = due_date
         self.done = done
-        self.creation_date = datetime.date.today()
+        self.creation_date = creation_date
 
     def toggle(self):
         """ Toggles item's state """
@@ -42,6 +42,6 @@ class Todo:
         conn = sqlite3.connect(cls.path)
         cursor = conn.execute("select * from todo_items where item_id='{}'".format(id))
         result = cursor.fetchone()
-        todo = Todo(result[1], result[2], result[4], result[5], result[0], result[3])
+        todo = Todo(result[1], result[2], result[4], result[5], result[0], result[3], result[6])
         conn.close()
         return todo
