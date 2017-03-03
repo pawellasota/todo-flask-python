@@ -4,9 +4,6 @@
         <img src="{{ url_for('static', filename='img/login.png') }}" width="250" height="250">
     </div>
     <div class="col-md-3 module_border">
-        {% if error %}
-                <div class="alert alert-danger" id="alert_login" role="alert"><strong>Error:</strong> {{ error }}</div>
-        {% endif %}
         <form id="login" class="" method="POST" role="form" action="{{ url_for("login") }}">
             <fieldset>
                 <legend>Log in</legend>

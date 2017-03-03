@@ -5,12 +5,14 @@
 {% endblock %}
 
 {% block content %}
-{#    <h2>Add new list</h2>#}
-    <form action="{{ url_for("add_list") }}" method="post">
-        <section>
-            <legend><h2>Add new list</h2></legend>
-            <label>Enter name for new list <input type="text" name="list_name" required="required" pattern="[A-Za-z0-9]{1,20}"></label>
+    {% if added == "fail" %}
+            <div class="alert alert-danger" id="alert_login" role="alert"><strong>List already exists</strong></div>
+    {% endif %}
+    <form action="{{ url_for("add_list") }}" method="post" class="manager">
+        <fieldset>
+            <legend><h2 class="content">Add new list</h2></legend>
+            <label>Enter name for new list (20 chars max)<input type="text" name="list_name" class="inpbutt" required="required" pattern="[A-Za-z0-9 ]{1,20}"></label>
             <button class="btn btn-default" type="submit">Submit</button>
-        </section>
+        </fieldset>
     </form>
 {% endblock %}

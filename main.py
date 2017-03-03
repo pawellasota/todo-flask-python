@@ -1,10 +1,9 @@
-from flask import Flask, render_template, request, url_for, Response, redirect, session, g, flash
+from flask import Flask, render_template, request, url_for, redirect, session, g, flash
 from models.todo import Todo
-from models.user import User, Manager
+from models.user import User
 from models.todo_list import TodoList
 from flask_jsglue import JSGlue
 import os
-
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -38,7 +37,9 @@ def list_todo_items(choosed_list_id):
 @app.route("/")
 @app.route("/index")
 def index():
-    if g.logged_user:
+    if "error" in request.args:
+        flash(request.args["error"])
+    if g.logged_user is not None:
         if g.logged_user.type == "manager":
             return redirect(url_for("manager"))
         else:
@@ -63,25 +64,29 @@ def manager():
             users_list_names.append([user.user_id, g.logged_user.get_user_list_names(user.user_id)])
     return render_template("manager.html", users_list=users_list, user_list_names=users_list_names, full_list=full_list)
 
+
 @app.before_request
 def before_request():
+    setattr(g, 'logged_user', None)
     if "username" in session:
-        setattr(g, 'logged_user', User.get_user(session['username'], session['password']))
+        g.logged_user = app.config.logged_user
     else:
-        setattr(g, 'logged_user', None)
+        redirect(url_for("login"))
 
 @app.route("/logout")
 def logout():
     session.pop("username", None)
-    session.pop("password", None)
+    flash("Logged out successfully")
     return redirect(url_for("login"))
 
 @app.route("/addlist", methods=["GET", "POST"])
 def add_list():
+    added = None
     if request.method == "POST":
-        g.logged_user.add_list(request.form["list_name"])
-        return redirect(url_for("list_todo_lists"))
-    return render_template("add_list.html")
+        added = g.logged_user.add_list(request.form["list_name"])
+        if added == "success":
+            return redirect(url_for("list_todo_lists"))
+    return render_template("add_list.html", added=added)
 
 @app.route("/add/<choosed_list_id>", methods=['GET', 'POST'])
 def add(choosed_list_id):
@@ -114,7 +119,7 @@ def remove_list(choosed_list_id):
 def edit(todo_id):
     """ Edits todo item with selected id in the database
     If the method was GET it should show todo item form.
-    If the method was POST it shold update todo item in database.
+    If the method was POST it should update todo item in database.
     """
     todo = Todo.get_by_id(todo_id)
     if request.method == "POST":
@@ -138,19 +143,23 @@ def toggle(todo_id, checked):
     todo.save()
     return redirect(url_for("list_todo_items", choosed_list_id=todo.list_id))
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
     if request.method == "POST":
         logged_user = User.get_user(request.form["username"], request.form["password"])
         if logged_user:
             session["username"] = logged_user.username
-            session["password"] = logged_user.password
+            app.config.logged_user = logged_user
+            flash('You were successfully logged in')
             return redirect(url_for("index"))
         else:
-            error = "Your login data was incorect"
-    return render_template("login.html", error=error)
+            flash("Your login data was incorrect")
+    return render_template("login.html")
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return redirect(url_for("index", error="Invalid address or route error: "+str(error)))
+
 
 if __name__ == "__main__":
     app.run(debug=True)

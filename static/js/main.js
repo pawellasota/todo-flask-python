@@ -5,3 +5,4 @@ function Remove() {
     window.location = Flask.url_for("manager", {"choosed_user": choosed_user, "choosed_list": choosed_list});
     return false;
 }
+

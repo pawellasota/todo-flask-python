@@ -1,8 +1,5 @@
 import sqlite3
 from models.todo_list import TodoList
-from models.todo import Todo
-import datetime
-
 
 class User:
     path = 'db/db.sqlite'
@@ -51,12 +48,16 @@ class User:
 
     def add_list(self, list_name):
         conn = sqlite3.connect(User.path)
+        cursor = conn.execute("select todo_list_name from todo_lists where todo_list_name='{}'".format(list_name))
+        if len(cursor.fetchall()) > 0:
+            conn.close()
+            return "fail"
         conn.execute("insert into todo_lists (`todo_list_name`) VALUES('{}')".format(list_name))
         todo_list_id = conn.execute("select todo_list_id from todo_lists where todo_list_name=('{}')".format(list_name)).fetchone()[0]
         conn.execute("insert into lists_allowed (`user_id`, `list_id`) VALUES('{}', '{}')".format(self.user_id, todo_list_id))
         conn.commit()
         conn.close()
-
+        return "success"
 
 class Manager(User):
     def __init__(self, user_id, username, password, todo_list_id, type):
@@ -65,8 +66,6 @@ class Manager(User):
     def get_user_list_names(self, user_id):
         list_names = []
         conn = sqlite3.connect(User.path)
-        # cursor = conn.execute("SELECT todo_list_name FROM todo_lists, lists_allowed where todo_list_id in"
-        #                       " (select list_id from lists_allowed where user_id='{}') group by todo_lists.todo_list_name".format(user_id))
         cursor = conn.execute("SELECT todo_list_name FROM todo_lists, lists_allowed "
                               "where lists_allowed.user_id='{}' and lists_allowed.list_id=todo_lists.todo_list_id".format(user_id))
         for row in cursor.fetchall():

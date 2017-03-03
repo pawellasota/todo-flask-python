@@ -10,8 +10,9 @@
     <a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button">Manage users lists</a>
 {% endblock %}
 {% block content %}
-    <h1>Manager menu</h1>
-        <table class="table table-bordered">
+    <h2 class="content">Users lists management</h2>
+    <div class="manager">
+    <table class="table table-bordered">
           <thead>
             <tr>
               <th>User_id</th>
@@ -27,9 +28,11 @@
                 {% for list in user_list_names %}
                   {% if list[0] == user.user_id %}
                       <td>
+                      <ul class="list-group">
                       {% for item in list[1] %}
-                        <p>{{ item[0] }}</p>
+                             <li class="list-group-item">{{ item[0] }}</li>
                       {% endfor %}
+                      </ul>
                       </td>
                   {% endif %}
               {% endfor %}
@@ -37,24 +40,28 @@
         {% endfor %}
           </tbody>
         </table>
-    <form method="POST" name="assign_list" action="{{ url_for("manager") }}">
-        <label>Choose user
-        <select class="form-control" name="user_to_add" id="user_to_add">
-            {% for user in users_list %}
-                <option>{{ user.username }}</option>
-            {% endfor %}
-        </select>
+    </div>
+    <form method="POST" name="assign_list" action="{{ url_for("manager") }}" class="manager">
+        <fieldset>
+        <legend>Choose user and list</legend>
+        <label class="label-form">User
+            <select class="form-control form-group" name="user_to_add" id="user_to_add">
+                {% for user in users_list %}
+                    <option>{{ user.username }}</option>
+                {% endfor %}
+            </select>
         </label>
-        <label>Choose list
-        <select class="form-control" name="list_to_add" id="list_to_add">
+        <label class="label-form">List
+            <select class="form-control form-group" name="list_to_add" id="list_to_add">
 
-            {% for list in full_list %}
-                <option>{{ list[0] }}</option>
-            {% endfor %}
-        </select>
+                {% for list in full_list %}
+                    <option>{{ list[0] }}</option>
+                {% endfor %}
+            </select>
         </label>
         <button class="btn btn-default" type="submit">Assign list to user</button>
-        <button class="btn btn-default" onclick="return Remove()">Remove</button>
+        <button class="btn btn-default" onclick="return Remove()">Remove list from user</button>
+        </fieldset>
     </form>
 
 {% endblock %}

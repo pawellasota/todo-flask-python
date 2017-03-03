@@ -1,24 +1,29 @@
 {% extends "base.html" %}
 {% block navbar %}
-    <div><a class="btn btn-default" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a></div>
-    <div><a class="btn btn-default" href="{{ url_for("add_list") }}" role="button">Add new list</a></div>
+    <div><a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a></div>
+    <div><a class="btn btn-default button-max-width" href="{{ url_for("add_list") }}" role="button">Add new list</a></div>
 {% endblock %}
 
 {% block content %}
-    <h2>Edit Todo in list: {{ choosed_list_name }} {{ todo.name }}</h2>
-    <form method="post" action="{{ url_for("edit", todo_id=todo.id) }}">
-      <div class="form-group">
-        <label>Todo name</label>
-        <input type="text" class="form-control" name="todo_name" placeholder="{{ todo.name }}">
+    <form method="post" action="{{ url_for("edit", todo_id=todo.id) }}" class="manager">
+      <fieldset>
+          <legend><h2 class="content">Edit Todo in list: {{ choosed_list_name }} {{ todo.name }}</h2></legend>
+        <div class="form-group">
+        <label>Todo name
+          <input type="text" class="form-control" name="todo_name" placeholder="{{ todo.name }}" autofocus required>
+        </label>
       </div>
       <div class="form-group">
-        <label>Due date</label>
-        <input type="date" class="form-control" name="todo_due_date" placeholder="{{ todo.due_date }}">
+        <label>Due date
+            <input type="date" class="form-control" name="todo_due_date" placeholder="{{ todo.due_date }}">
+        </label>
       </div>
       <div class="form-group">
-        <label>Priority</label>
-        <input type="range" name="todo_priority" min="0" max="10" value="{{ todo.priority }}">
+        <label>Priority
+            <input type="range" name="todo_priority" min="0" max="10" value="{{ todo.priority }}">
+        </label>
       </div>
       <button type="submit" class="btn btn-default button-max-width">Submit</button>
+      </fieldset>
     </form>
 {% endblock %}

@@ -4,11 +4,11 @@
     <a class="btn btn-default button-max-width" href="{{ url_for("add_list") }}" role="button">Add new list</a>
 {% endblock %}
 {% block content %}
-    <h2>Add new item</h2>
-    <form method="post">
+    <h2 class="content">Add new item</h2>
+    <form method="post" class="manager">
       <div class="form-group">
         <label>Todo name</label>
-        <input type="text" class="form-control" name="todo_name" placeholder="Todo name">
+        <input type="text" class="form-control" name="todo_name" placeholder="Todo name" required>
       </div>
       <div class="form-group">
         <label>Due date</label>
