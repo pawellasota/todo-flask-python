@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block title %}
+    Add item
+{% endblock %}
 {% block navbar %}
     <a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a>
     <a class="btn btn-default button-max-width" href="{{ url_for("add_list") }}" role="button">Add new list</a>

@@ -9,21 +9,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         <title>{% block title %}{% endblock %}</title>
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            {% for message in messages %}
-              <div id="message" class="alert alert-info text-centered" role="alert"><strong>{{ message }}</strong></div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
     {% endblock %}
-    <script>
-        $(document).ready(function() {
-            setTimeout(function () {
-                $('#message').fadeOut('fast');
-            }, 3000);
-        });
-    </script>
 </head>
 <body>
     <div class="container">
@@ -43,15 +29,22 @@
             </div>
             <div class="col-md-9 module_border">
                 <div class="row">
-                    {% block content %}{% endblock %}
+                    {% block content %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="{{ category }}" role="alert"><strong>{{ message }}</strong></div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    {% endblock %}
                 </div>
             </div>
         {% endblock %}
         </div>
-
         <div class="row text-centered footer-height">
             <div class="col-md-12">
-            {% block footer %}Copyright &copy; Paweł Lasota 2017{% endblock %}
+                {% block footer %}Copyright &copy; Paweł Lasota 2017{% endblock %}
             </div>
         </div>
     </div>

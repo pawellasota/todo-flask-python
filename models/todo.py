@@ -3,7 +3,16 @@ import datetime
 
 
 class Todo:
-    """ Class representing todo item."""
+    """ Class representing todo item.
+        Args:
+            name (str): name of todo item
+            list_id (int): list id where todo item is
+            priority (int): describes priority of todo item
+            due_date (str): due date of todo item
+            id (int): id of todo item
+            done (['True', 'False']: describes if todo item is done or not
+            creation_date (str): date of creation of todo item
+    """
     path = 'db/db.sqlite'
 
     def __init__(self, name, list_id, priority, due_date, id=None, done=False, creation_date=None):
@@ -39,6 +48,7 @@ class Todo:
 
     @classmethod
     def get_by_id(cls, id):
+        """Returns Todo object by id"""
         conn = sqlite3.connect(cls.path)
         cursor = conn.execute("select * from todo_items where item_id='{}'".format(id))
         result = cursor.fetchone()

@@ -4,6 +4,11 @@ from models.todo import Todo
 
 
 class TodoList:
+    """ Class representing todo item list.
+        Args:
+            todo_list_id (int): id of list where todo item is
+            todo_list_name (str): name of todo list
+    """
     path = 'db/db.sqlite'
 
     def __init__(self, todo_list_id, todo_list_name):
@@ -12,6 +17,10 @@ class TodoList:
 
     @classmethod
     def add_todo_item(cls, todo):
+        """ Adds new todo item to data base.
+            Args:
+                todo (obj): todo object to add
+        """
         conn = sqlite3.connect(cls.path)
         creation_date = datetime.date.today()
         conn.execute("insert into todo_items (item_content, todo_list_id, done, priority, due_date,"
@@ -22,6 +31,10 @@ class TodoList:
 
     @classmethod
     def get_by_id(cls, id):
+        """ Returns TodoList object with id given
+            Args:
+                id (int): todo list id
+        """
         conn = sqlite3.connect(cls.path)
         cursor = conn.execute("select * from todo_lists where todo_list_id='{}'".format(id))
         result = cursor.fetchone()
@@ -30,6 +43,8 @@ class TodoList:
         return todoList
 
     def get_to_do_items(self):
+        """ Returns todo items for particular list
+        """
         lists = []
         conn = sqlite3.connect(TodoList.path)
         cursor = conn.execute("select * from todo_items where todo_list_id='{}' order by priority desc".format(self.todo_list_id))
@@ -40,6 +55,10 @@ class TodoList:
 
     @classmethod
     def get_list_name_by_id(cls, id):
+       """ Returns list name containing particular id
+            Args:
+                id (int): id of list
+       """
        conn = sqlite3.connect(cls.path)
        cursor = conn.execute("select todo_list_name from todo_lists where todo_list_id='{}'".format(id))
        name = cursor.fetchone()[0]
@@ -47,6 +66,8 @@ class TodoList:
        return name
 
     def delete(self):
+        """ Removes list from database
+        """
         conn = sqlite3.connect(TodoList.path)
         conn.execute("delete from todo_lists where todo_list_id='{}'".format(self.todo_list_id))
         conn.execute("delete from todo_items where todo_list_id='{}'".format(self.todo_list_id))

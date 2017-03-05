@@ -20,15 +20,15 @@ def list_todo_lists():
 
 @app.route("/user")
 def user():
-    """ Shows list of todo items stored in the database.
+    """ Shows all lists of todo's of particular user
     """
     lists = g.logged_user.get_lists()
-    if lists:
-        return render_template("lists.html", lists=lists)
-    return redirect(url_for("index"))
+    return render_template("lists.html", lists=lists)
 
 @app.route("/list_todo_items/<choosed_list_id>")
 def list_todo_items(choosed_list_id):
+    """ Shows all todo's from choosen list
+    """
     if choosed_list_id:
         todo_list = TodoList.get_by_id(choosed_list_id)
         list_of_items = todo_list.get_to_do_items()
@@ -37,8 +37,8 @@ def list_todo_items(choosed_list_id):
 @app.route("/")
 @app.route("/index")
 def index():
-    if "error" in request.args:
-        flash(request.args["error"])
+    """ App root. Depending on type of user ('user' or 'manager') routes him for expected view
+    """
     if g.logged_user is not None:
         if g.logged_user.type == "manager":
             return redirect(url_for("manager"))
@@ -49,50 +49,58 @@ def index():
 
 @app.route("/manager", methods=["GET", "POST"])
 def manager():
+    """ Shows view for manager
+    """
     if request.args.get("choosed_user"):
         g.logged_user.remove_access_to_list(request.args.get("choosed_user"), request.args.get("choosed_list"))
         return redirect("manager")
     users_list_names = []
     users_list = g.logged_user.get_all_users()
     full_list = g.logged_user.get_all_lists()
-    for user in users_list:
-        users_list_names.append([user.user_id, g.logged_user.get_user_list_names(user.user_id)])
-    if request.method == "POST":
-        g.logged_user.assign_list_to_user(request.form["user_to_add"], request.form["list_to_add"])
-        users_list_names = []
+    if full_list:
         for user in users_list:
             users_list_names.append([user.user_id, g.logged_user.get_user_list_names(user.user_id)])
+        if request.method == "POST":
+            g.logged_user.assign_list_to_user(request.form["user_to_add"], request.form["list_to_add"])
+            users_list_names = []
+            for user in users_list:
+                users_list_names.append([user.user_id, g.logged_user.get_user_list_names(user.user_id)])
     return render_template("manager.html", users_list=users_list, user_list_names=users_list_names, full_list=full_list)
 
 
 @app.before_request
 def before_request():
+    """ Check if session for user is still up, assign current user object to global g
+    """
     setattr(g, 'logged_user', None)
     if "username" in session:
         g.logged_user = app.config.logged_user
-    else:
-        redirect(url_for("login"))
 
 @app.route("/logout")
 def logout():
+    """ Log out current user
+    """
     session.pop("username", None)
-    flash("Logged out successfully")
+    flash("Logged out successfully", "alert alert-success text-centered")
     return redirect(url_for("login"))
 
 @app.route("/addlist", methods=["GET", "POST"])
 def add_list():
+    """ Adds new list for user if method was POST, shows form for add list if method was GET
+    """
     added = None
     if request.method == "POST":
         added = g.logged_user.add_list(request.form["list_name"])
         if added == "success":
             return redirect(url_for("list_todo_lists"))
+        else:
+            flash("List already exists", "alert alert-danger text-centered")
     return render_template("add_list.html", added=added)
 
 @app.route("/add/<choosed_list_id>", methods=['GET', 'POST'])
 def add(choosed_list_id):
-    """ Creates new todo item
-    If the method was GET it should show new item form.
-    If the method was POST it shold create and save new todo item.
+    """ Creates new todo item. If the method was GET it shows new item form.
+        If the method was POST it creates and save new todo item.
     """
     if request.method == "POST":
         new_todo_item = Todo(request.form["todo_name"], choosed_list_id, request.form["todo_priority"],
@@ -111,6 +119,8 @@ def remove(todo_id):
 
 @app.route("/remove_list/<choosed_list_id>")
 def remove_list(choosed_list_id):
+    """ Removes particular list from database
+    """
     list = TodoList.get_by_id(choosed_list_id)
     list.delete()
     return redirect("list_todo_lists")
@@ -118,8 +128,8 @@ def remove_list(choosed_list_id):
 @app.route("/edit/<todo_id>", methods=['GET', 'POST'])
 def edit(todo_id):
     """ Edits todo item with selected id in the database
-    If the method was GET it should show todo item form.
-    If the method was POST it should update todo item in database.
+        If the method was GET it shows todo item form.
+        If the method was POST it updates todo item in database.
     """
     todo = Todo.get_by_id(todo_id)
     if request.method == "POST":
@@ -145,20 +155,25 @@ def toggle(todo_id, checked):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """ Shows login form if method was GET. Log user if method was POST.
+    """
     if request.method == "POST":
         logged_user = User.get_user(request.form["username"], request.form["password"])
         if logged_user:
             session["username"] = logged_user.username
             app.config.logged_user = logged_user
-            flash('You were successfully logged in')
+            flash('You were successfully logged in', "alert alert-success text-centered")
             return redirect(url_for("index"))
         else:
-            flash("Your login data was incorrect")
+            flash("Your login data was incorrect", "alert alert-danger text-centered")
     return render_template("login.html")
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return redirect(url_for("index", error="Invalid address or route error: "+str(error)))
+    """ Basic 404 error handle. Redirect to login page.
+    """
+    flash("Invalid address: "+str(error), "alert alert-danger text-centered")
+    return render_template("login.html")
 
 
 if __name__ == "__main__":

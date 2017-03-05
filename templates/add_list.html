@@ -1,13 +1,13 @@
 {% extends "base.html" %}
+{% block title %}
+    Add list
+{% endblock %}
 {% block navbar %}
     <div><a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a></div>
     <div><a class="btn btn-default button-max-width" href="{{ url_for("add_list") }}" role="button">Add new list</a></div>
 {% endblock %}
-
 {% block content %}
-    {% if added == "fail" %}
-            <div class="alert alert-danger" id="alert_login" role="alert"><strong>List already exists</strong></div>
-    {% endif %}
+    {{ super() }}
     <form action="{{ url_for("add_list") }}" method="post" class="manager">
         <fieldset>
             <legend><h2 class="content">Add new list</h2></legend>
