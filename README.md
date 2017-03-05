@@ -75,7 +75,8 @@ Install virtualenv(optional) - enables multiple side-by-side installations of Py
     
     $ sudo apt-get install python-virtualenv
 
-Create database 'db' in SQLite3, then import sql database from sql file located at /db/script.sql.
+In case of problems with database or you just want to return to default data (in /db/db.sqlite):
+Create database 'db' in SQLite3, then import sql database from sql file located at /db/script.sql
 You can use DBBrowser utility to handle it.
 
 Start application by execute main.py
@@ -92,8 +93,7 @@ You should see something like this:
 Now server is listening default in port 5000 in your localhost, so start app by writing in your
 browser localhost:5000 
 
-Support
--------
+#Support
 
 If you are having issues, please let me know.
 plasota76@gmail.com
