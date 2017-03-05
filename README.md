@@ -9,14 +9,14 @@ There are two users initially:
 * 'manager' with password 'pass'
 
 After logging in the user sees todo lists displayed and can choose list of todo's items or add new list.
-![alt](https://goo.gl/photos/XcspUL3q8J5EhVoF6 "User")
+![alt](https://goo.gl/photos/XcspUL3q8J5EhVoF6)
 In particular list he can manipulate todo items (add/remove/modify entries/set priority/add due date/remove list). 
 Todo items have creation date and are sorted by priority also.
 There are 10 levels of priority (1-10).
 
 After logging in as manager lists of users are displayed with lists of todo's allowed for modify to them.
 Manager is able to assign or remove particular list to user. 
-![alt](https://goo.gl/photos/VHj3zXEWWqpjcya18 "Manager")
+![alt](https://goo.gl/photos/VHj3zXEWWqpjcya18)
 
 # Project tree
 
