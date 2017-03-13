@@ -13,6 +13,7 @@
             {% endfor %}
 
     <div id="l_content" class="row" style="padding: 50px; display: none;"></div>
+    <div id="e_content" class="row" style="padding: 50px; display: none;"></div>
 
 {% endblock %}
 {% block scripts %}
@@ -31,6 +32,7 @@ $(document).ready(function() {
                 url : '/get_todo_items',
                 success : function (data) {
                     if (data) {
+                        $('div#e_content').slideUp("slow");
                         $('div#l_content').slideDown("slow");
                         $('div#l_content').html(data)
                     }
@@ -77,6 +79,48 @@ $(document).ready(function() {
             },
             error : function () {
                 alert("Remove error")
+            }
+        })
+    });
+    $(document).on('click', '[id^=edit_]', function (event) {
+        event.preventDefault();
+        var todo_id = $(this).attr('id');
+        $('div#l_content').slideUp("slow");
+        $('div#e_content').slideDown("slow", function () {
+            $.ajax({
+                data : { todo_id : todo_id},
+                type : 'GET',
+                url : '/edit',
+                success : function (data) {
+                    $('div#e_content').slideDown("slow");
+                    $('div#e_content').html(data);
+                },
+                error : function () {
+                    alert("Cannot add todo item!")
+                }
+            })
+        })
+    })
+    $(document).on('click', '[id^=update_todo_]', function (event) {
+        event.preventDefault();
+        var todo_id = $(this).attr('id');
+        var todo_name = $('#todo_name').val();
+        var todo_due_date = $('#todo_due_date').val();
+        var todo_priority = $('#todo_priority').val();
+        $.ajax({
+            data : { todo_id : todo_id,
+                     todo_name : todo_name,
+                     todo_due_date : todo_due_date,
+                     todo_priority : todo_priority },
+            type : 'POST',
+            url : '/edit',
+            success : function (data) {
+                $('#update_status').text("Todo updated: ", data).show();
+                $('#update_status').delay(2000).fadeOut('slow');
+                $('div#e_content').delay(2000).slideUp("slow");
+            },
+            error: function (data) {
+                alert(data)
             }
         })
     })

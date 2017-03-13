@@ -98,8 +98,8 @@ def add_list():
             flash("List already exists", "alert alert-danger text-centered")
     return render_template("add_list.html", added=added)
 
-@app.route("/add/<choosed_list_id>", methods=['GET', 'POST'])
-def add(choosed_list_id):
+@app.route("/add", methods=['GET', 'POST'])
+def add(list_id):
     """ Creates new todo item. If the method was GET it shows new item form.
         If the method was POST it creates and save new todo item.
     """
@@ -126,21 +126,25 @@ def remove_list(choosed_list_id):
     list.delete()
     return redirect("list_todo_lists")
 
-@app.route("/edit/<todo_id>", methods=['GET', 'POST'])
-def edit(todo_id):
+@app.route("/edit", methods=['GET', 'POST'])
+def edit():
     """ Edits todo item with selected id in the database
         If the method was GET it shows todo item form.
         If the method was POST it updates todo item in database.
     """
-    todo = Todo.get_by_id(todo_id)
+
     if request.method == "POST":
+        todo_id = request.form["todo_id"]
+        todo = Todo.get_by_id(todo_id.strip("update_todo_"))
         todo.name = request.form["todo_name"]
         todo.due_date = request.form["todo_due_date"]
         todo.priority = request.form["todo_priority"]
         todo.save()
-        return redirect(url_for("list_todo_items", choosed_list_id=todo.list_id))
-    choosed_list_name = TodoList.get_list_name_by_id(todo.list_id)
-    return render_template("edit_todo.html", todo=todo, choosed_list_name=choosed_list_name)
+        return todo.name
+    todo_id = request.args["todo_id"]
+    todo = Todo.get_by_id(todo_id.strip("edit_"))
+    list_name = TodoList.get_list_name_by_id(todo.list_id)
+    return render_template("edit_todo.html", todo=todo, list_name=list_name)
 
 
 @app.route("/toggle")
