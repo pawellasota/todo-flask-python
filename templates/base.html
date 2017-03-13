@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     {% block head %}
+        {{ JSGlue.include() }}
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -12,24 +13,25 @@
     {% endblock %}
 </head>
 <body>
+    {% block body %}
     <div class="container">
+        {% block logo %}
         <div class="row">
             <div class="col-md-2 vcenter"><img src="{{ url_for('static', filename='img/ok.png') }}"/></div>
             <div class="col-md-9 vcenter"><h1 id="logo">Todo App</h1></div>
         </div>
-        <div class="row" style="background-color: white;">
+        {% endblock %}
         {% block main_content %}
+        <div class="row" style="background-color: white;">
             <div class="col-md-3 module_border">
-                    <div class="">{% block logged %}</div>
-                        <img src="{{ url_for('static', filename='img/user.png') }}"/>
-                        <div class="row">Logged as <strong>{{ session["username"] }}</strong></div>
-                        <div class="row"><a class="btn btn-default button-max-width" href="{{ url_for("logout") }}" role="button">Logout</a></div>
-                    {% endblock %}
-                    <div class="row">{% block navbar %}{% endblock %}</div>
+                {% block navbar %}
+                <div><img src="{{ url_for('static', filename='img/user.png') }}"/></div>
+                <div>Logged as <strong>{{ session["username"] }}</strong></div>
+                <div><a class="btn btn-default button-max-width" href="{{ url_for("logout") }}" role="button">Logout</a></div>
+                {% endblock %}
             </div>
             <div class="col-md-9 module_border">
-                <div class="row">
-                    {% block content %}
+                {% block content %}
                         {% with messages = get_flashed_messages(with_categories=true) %}
                             {% if messages %}
                                 {% for category, message in messages %}
@@ -37,18 +39,22 @@
                                 {% endfor %}
                             {% endif %}
                         {% endwith %}
-                    {% endblock %}
-                </div>
+                {% endblock %}
             </div>
-        {% endblock %}
         </div>
+        {% endblock %}
+        {% block footer %}
         <div class="row text-centered footer-height">
             <div class="col-md-12">
-                {% block footer %}Copyright &copy; Paweł Lasota 2017{% endblock %}
+                Copyright &copy; Paweł Lasota 2017
             </div>
         </div>
+        {% endblock %}
     </div>
 {% block scripts %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+{% endblock %}
 {% endblock %}
 </body>
 </html>

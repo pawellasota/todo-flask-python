@@ -25,14 +25,15 @@ def user():
     lists = g.logged_user.get_lists()
     return render_template("lists.html", lists=lists)
 
-@app.route("/list_todo_items/<choosed_list_id>")
-def list_todo_items(choosed_list_id):
+@app.route("/get_todo_items")
+def list_todo_items():
     """ Shows all todo's from choosen list
     """
-    if choosed_list_id:
-        todo_list = TodoList.get_by_id(choosed_list_id)
+    list_id = request.args["list_id"]
+    if list_id:
+        todo_list = TodoList.get_by_id(list_id.strip('list_'))
         list_of_items = todo_list.get_to_do_items()
-        return render_template("lists.html", list_of_items=list_of_items, choosed_list=todo_list)
+        return render_template("list_todo_items.html", list_of_items=list_of_items, choosed_list=todo_list)
 
 @app.route("/")
 @app.route("/index")
@@ -167,6 +168,11 @@ def login():
         else:
             flash("Your login data was incorrect", "alert alert-danger text-centered")
     return render_template("login.html")
+
+# @app.route("/get_todo_list", methods=["POST"])
+# def get_todo_list():
+#     list_id = request.form["list_id"]
+
 
 @app.errorhandler(404)
 def page_not_found(error):
