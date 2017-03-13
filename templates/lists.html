@@ -62,6 +62,24 @@ $(document).ready(function() {
             }
         });
     });
+    $(document).on('click', '[id^=remove_]', function (event) {
+        event.preventDefault();
+        var todo_id = $(this).attr('id');
+        $.ajax({
+            data : { todo_id : todo_id},
+            type : 'GET',
+            context: this,
+            url : '/remove',
+            success : function (data) {
+                $('#checked_status').text("Todo removed: ", data).show();
+                $('#checked_status').delay(2000).fadeOut('slow');
+                $(this).closest('tr').fadeOut("slow");
+            },
+            error : function () {
+                alert("Remove error")
+            }
+        })
+    })
 });
 </script>
 {% endblock %}

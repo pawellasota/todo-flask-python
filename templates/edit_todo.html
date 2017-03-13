@@ -1,31 +1,24 @@
 {% extends "base.html" %}
-{% block title %}
-    Edit todo
-{% endblock %}
 {% block navbar %}
-    <div><a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a></div>
-    <div><a class="btn btn-default button-max-width" href="{{ url_for("add_list") }}" role="button">Add new list</a></div>
 {% endblock %}
-{% block content %}
-    <form method="post" action="{{ url_for("edit", todo_id=todo.id) }}" class="manager">
-        <fieldset>
-            <legend><h2 class="content">Edit Todo in list: {{ choosed_list_name }} {{ todo.name }}</h2></legend>
-            <div class="form-group">
-                <label>Todo name
-                    <input type="text" class="form-control" name="todo_name" placeholder="{{ todo.name }}" autofocus required>
-                </label>
-            </div>
-            <div class="form-group">
-                <label>Due date
-                    <input type="date" class="form-control" name="todo_due_date" placeholder="{{ todo.due_date }}">
-                </label>
-            </div>
-            <div class="form-group">
-                <label>Priority
-                    <input type="range" name="todo_priority" min="0" max="10" value="{{ todo.priority }}">
-                </label>
-            </div>
-            <button type="submit" class="btn btn-default button-max-width">Submit</button>
-        </fieldset>
-    </form>
+{% block logo %}
+{% endblock %}
+{% block footer %}
+{% endblock %}
+{% block body %}
+    <div class="col-md-12">
+        <form method="post" class="manager">
+            <fieldset>
+                <legend><h2 class="content">Edit Todo in list: {{ list_name }} {{ todo.name }}</h2></legend>
+                    <label for="todo_name">Todo name</label>
+                        <input type="text" class="form-control" name="todo_name" id="todo_name" value="{{ todo.name }}" autofocus required>
+                    <label for="todo_due_date">Due date</label>
+                        <input type="date" class="form-control" name="todo_due_date" id="todo_due_date" value="{{ todo.due_date }}">
+                    <label for="todo_priority">Priority</label>
+                        <input type="range" name="todo_priority" min="0" max="10" id="todo_priority" value="{{ todo.priority }}">
+                <button type="submit" class="btn btn-default button-max-width">Update</button>
+            </fieldset>
+        </form>
+        <div id="checked_status" class="alert alert-success text-centered" hidden></div>
+    </div>
 {% endblock %}
