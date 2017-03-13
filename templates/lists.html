@@ -8,10 +8,11 @@
 {% block content %}
     {{ super() }}
     <h2 class="content">Your Todo lists</h2>
-    {% for list in lists %}
-        <a class="btn btn-default btn-large" id="list_{{ list.todo_list_id }}" href="" role="button">{{ list.todo_list_name }}</a>
-    {% endfor %}
-    <div id="l_content" class="row"></div>
+            {% for list in lists %}
+                <a class="btn btn-default btn-large" id="list_{{ list.todo_list_id }}" href="" role="button">{{ list.todo_list_name }}</a>
+            {% endfor %}
+
+    <div id="l_content" class="row" style="padding: 50px; display: none;"></div>
 
 {% endblock %}
 {% block scripts %}
@@ -21,23 +22,46 @@
 
 $(document).ready(function() {
     $('[id^=list_]').on('click', function (event) {
+        var list_id = $(this).attr('id');
         event.preventDefault();
-        $.ajax({
-            data : { list_id: $(this).attr('id') },
-            type : 'GET',
-            url : '/get_todo_items',
-            success : function (data) {
-                if (data) {
-                    $('div#l_content').html(data)
+        $('div#l_content').slideUp("slow", function () {
+            $.ajax({
+                data : { list_id: list_id },
+                type : 'GET',
+                url : '/get_todo_items',
+                success : function (data) {
+                    if (data) {
+                        $('div#l_content').slideDown("slow");
+                        $('div#l_content').html(data)
+                    }
+                },
+                error : function () {
+                    $('div#l_content').innerHTML="Failed to load data"
                 }
+
+            });
+        });
+    });
+    $(document).on('change', '[class^=todo_]', function (event) {
+        var todo_id = $(this).attr('class');
+        $.ajax({
+            data : { todo_id: todo_id},
+            type : 'GET',
+            url : '/toggle',
+            success: function (data) {
+                if (data == "True") {
+                    $('#checked_status').text("Todo item saved as marked").show();
+                }
+                else {
+                    $('#checked_status').text("Todo item saved as unmarked").show();
+                }
+                $('#checked_status').delay(2000).fadeOut('slow');
             },
             error : function () {
-                $('div#l_content').innerHTML="Failed to load data"
+                alert("Toggle error")
             }
-
         });
-
     });
-})
+});
 </script>
 {% endblock %}

@@ -143,16 +143,17 @@ def edit(todo_id):
     return render_template("edit_todo.html", todo=todo, choosed_list_name=choosed_list_name)
 
 
-@app.route("/toggle/<todo_id>, <checked>")
-def toggle(todo_id, checked):
+@app.route("/toggle")
+def toggle():
     """ Toggles the state of todo item """
-    todo = Todo.get_by_id(todo_id)
-    if checked == "True":
-        todo.done = "True"
-    else:
+    todo_id = request.args["todo_id"]
+    todo = Todo.get_by_id(todo_id.strip("todo_"))
+    if todo.done == "True":
         todo.done = "False"
+    else:
+        todo.done = "True"
     todo.save()
-    return redirect(url_for("list_todo_items", choosed_list_id=todo.list_id))
+    return todo.done
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
