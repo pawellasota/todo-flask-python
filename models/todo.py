@@ -55,3 +55,12 @@ class Todo:
         todo = Todo(result[1], result[2], result[4], result[5], result[0], result[3], result[6])
         conn.close()
         return todo
+
+    @classmethod
+    def get_by_name(cls, name, list_id):
+        conn = sqlite3.connect(cls.path)
+        cursor = conn.execute("select * from todo_items where item_content=? and todo_list_id=?", (name, list_id))
+        result = cursor.fetchone()
+        conn.commit()
+        conn.close()
+        return Todo(result[1], result[2], result[4], result[5], result[0], result[3], result[6])

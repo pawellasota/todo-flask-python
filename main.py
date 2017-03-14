@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, url_for, redirect, session, g, flash
+from flask import Flask, render_template, request, url_for, redirect, session, g, flash, jsonify
 from models.todo import Todo
 from models.user import User
 from models.todo_list import TodoList
 from flask_jsglue import JSGlue
-import os
+import os, datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -99,16 +99,28 @@ def add_list():
     return render_template("add_list.html", added=added)
 
 @app.route("/add", methods=['GET', 'POST'])
-def add(list_id):
+def add():
     """ Creates new todo item. If the method was GET it shows new item form.
         If the method was POST it creates and save new todo item.
     """
     if request.method == "POST":
-        new_todo_item = Todo(request.form["todo_name"], choosed_list_id, request.form["todo_priority"],
+        choosed_list_id = request.form["choosed_list_id"]
+        new_todo_item = Todo(request.form["todo_name"], choosed_list_id.strip("add_todo_submit_"), request.form["todo_priority"],
                              request.form["todo_due_date"])
         TodoList.add_todo_item(new_todo_item)
-        return redirect(url_for("list_todo_items", choosed_list_id=choosed_list_id))
-    return render_template("add_item.html")
+        new_todo_item = Todo.get_by_name(request.form["todo_name"], choosed_list_id.strip("add_todo_submit_"))
+        return jsonify({
+                        'item_id': new_todo_item.id,
+                        'item_content': new_todo_item.name,
+                        'list_id': new_todo_item.list_id,
+                        'priority': new_todo_item.priority,
+                        'due_date': new_todo_item.due_date,
+                        'done': new_todo_item.done,
+                        'creation_date': new_todo_item.creation_date
+                        })
+    choosed_list_id = request.args["choosed_list_id"]
+    choosed_list = TodoList.get_by_id(choosed_list_id.strip("add_new_todo_"))
+    return render_template("add_item.html", choosed_list=choosed_list)
 
 @app.route("/remove")
 def remove():
@@ -116,7 +128,7 @@ def remove():
     todo_id = request.args["todo_id"]
     todo = Todo.get_by_id(todo_id.strip("remove_"))
     todo.delete()
-    return todo.name
+    return jsonify({"todo_name": todo.name})
 
 @app.route("/remove_list/<choosed_list_id>")
 def remove_list(choosed_list_id):
@@ -140,7 +152,7 @@ def edit():
         todo.due_date = request.form["todo_due_date"]
         todo.priority = request.form["todo_priority"]
         todo.save()
-        return todo.name
+        return jsonify({"todo_name": todo.name})
     todo_id = request.args["todo_id"]
     todo = Todo.get_by_id(todo_id.strip("edit_"))
     list_name = TodoList.get_list_name_by_id(todo.list_id)

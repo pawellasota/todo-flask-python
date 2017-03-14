@@ -11,9 +11,10 @@
             {% for list in lists %}
                 <a class="btn btn-default btn-large" id="list_{{ list.todo_list_id }}" href="" role="button">{{ list.todo_list_name }}</a>
             {% endfor %}
-
     <div id="l_content" class="row" style="padding: 50px; display: none;"></div>
     <div id="e_content" class="row" style="padding: 50px; display: none;"></div>
+    <div id="a_content" class="row" style="padding: 50px; display: none;"></div>
+    <div id="info" class="alert alert-success text-centered" hidden></div>
 
 {% endblock %}
 {% block scripts %}
@@ -33,6 +34,7 @@ $(document).ready(function() {
                 success : function (data) {
                     if (data) {
                         $('div#e_content').slideUp("slow");
+                        $('div#a_content').slideUp("slow");
                         $('div#l_content').slideDown("slow");
                         $('div#l_content').html(data)
                     }
@@ -52,12 +54,12 @@ $(document).ready(function() {
             url : '/toggle',
             success: function (data) {
                 if (data == "True") {
-                    $('#checked_status').text("Todo item saved as marked").show();
+                    $('#info').text("Todo item saved as marked").show();
                 }
                 else {
-                    $('#checked_status').text("Todo item saved as unmarked").show();
+                    $('#info').text("Todo item saved as unmarked").show();
                 }
-                $('#checked_status').delay(2000).fadeOut('slow');
+                $('#info').delay(2000).fadeOut('slow');
             },
             error : function () {
                 alert("Toggle error")
@@ -73,8 +75,8 @@ $(document).ready(function() {
             context: this,
             url : '/remove',
             success : function (data) {
-                $('#checked_status').text("Todo removed: ", data).show();
-                $('#checked_status').delay(2000).fadeOut('slow');
+                $('#info').text("Todo removed: " + data.todo_name).show();
+                $('#info').delay(2000).fadeOut('slow');
                 $(this).closest('tr').fadeOut("slow");
             },
             error : function () {
@@ -100,13 +102,14 @@ $(document).ready(function() {
                 }
             })
         })
-    })
+    });
     $(document).on('click', '[id^=update_todo_]', function (event) {
         event.preventDefault();
         var todo_id = $(this).attr('id');
         var todo_name = $('#todo_name').val();
         var todo_due_date = $('#todo_due_date').val();
         var todo_priority = $('#todo_priority').val();
+        var update_todo_list_id = $('#update_todo_list_id').val();
         $.ajax({
             data : { todo_id : todo_id,
                      todo_name : todo_name,
@@ -115,12 +118,59 @@ $(document).ready(function() {
             type : 'POST',
             url : '/edit',
             success : function (data) {
-                $('#update_status').text("Todo updated: ", data).show();
-                $('#update_status').delay(2000).fadeOut('slow');
-                $('div#e_content').delay(2000).slideUp("slow");
+                jQuery("#list_"+update_todo_list_id)[0].click();
+                $('#info').text("Todo updated: "+ data.todo_name).show();
+                $('#info').delay(2000).fadeOut('slow');
             },
             error: function (data) {
                 alert(data)
+            }
+        })
+    });
+    $(document).on('click', '[id^=add_new_todo_]', function (event) {
+        event.preventDefault();
+        var choosed_list_id = $(this).attr('id');
+        $.ajax({
+            data : { choosed_list_id : choosed_list_id },
+            type : 'GET',
+            url : '/add',
+            success : function (data) {
+                $('div#l_content').slideUp("slow");
+                $('div#e_content').slideUp("slow");
+                $('div#a_content').html(data);
+                $('div#a_content').slideDown('slow');
+            },
+            error : function (data) {
+                alert('Add item aborted')
+            }
+        })
+    });
+    $(document).on('click', '[id^=add_todo_submit_]', function (event) {
+        event.preventDefault();
+        var choosed_list_id = $(this).attr('id');
+        var todo_name = $('#todo_name_submit').val();
+        var todo_due_date = $('#todo_due_date_submit').val();
+        var todo_priority = $('#todo_priority_submit').val();
+        $.ajax({
+            data : { choosed_list_id : choosed_list_id,
+                     todo_name : todo_name,
+                     todo_due_date : todo_due_date,
+                     todo_priority : todo_priority },
+            type : 'POST',
+            url : '/add',
+            context : this,
+            success : function (data) {
+{#                var checked = "";#}
+{#                if (data.done == "True") {#}
+{#                    checked = "checked";#}
+{#                }#}
+                var trigger_button = choosed_list_id.replace('add_todo_submit_','');
+                jQuery("#list_"+trigger_button)[0].click();
+                $('#info').text("Todo added: "+ data.item_content).show();
+                $('#info').delay(2000).fadeOut('slow');
+            },
+            error : function (data) {
+                alert("Error in adding todo")
             }
         })
     })
