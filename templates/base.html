@@ -44,7 +44,7 @@
                             </div>
                             <div class="row row-menu">
                                 <div class="col-md-12">
-                                    Pick background
+                                    <div class="menu-item">Pick background</div>
                                 </div>
                             </div>
                             <div class="row row-menu">
@@ -54,6 +54,23 @@
                                 <div class="col-md-2 bg-picker" style="background-color: #c6c971;"></div>
                                 <div class="col-md-2 bg-picker" style="background-color: #d4a9e9;"></div>
                                 <div class="col-md-2 bg-picker" style="background-color: #00d9e9;"></div>
+                            </div>
+                            <div class="row row-menu">
+                                <div class="col-md-12">
+                                    <div class="menu-item">Pick font</div>
+                                </div>
+                            </div>
+                            <div class="row row-menu">
+                                <div class="col-md-6 ft-picker" style="font-family: Ubuntu;">Ubuntu</div>
+                                <div class="col-md-6 ft-picker" style="font-family: Arial;">Arial</div>
+                            </div>
+                            <div class="row row-menu">
+                                <div class="col-md-6 ft-picker" style='font-family: "Courier New";'>Courier</div>
+                                <div class="col-md-6 ft-picker" style="font-family: fantasy;">Fantasy</div>
+                            </div>
+                            <div class="row row-menu">
+                                <div class="col-md-6 ft-picker" style="font-family: Tahoma;">Tahoma</div>
+                                <div class="col-md-6 ft-picker" style='font-family: "Times New Roman";'>Times</div>
                             </div>
                         {% endblock %}
                     </div>
@@ -80,7 +97,7 @@
     {% endblock %}
     </div>
     {% block scripts %}
-        {#    <script src="{{ url_for('static', filename='js/main.js') }}"></script>#}
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% endblock %}
 </body>
 </html>
