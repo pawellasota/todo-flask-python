@@ -5,8 +5,9 @@
 {% endblock %}
 {% block footer %}
 {% endblock %}
+{% block main_content %}
+{% endblock %}
 {% block body %}
-    <div class="col-md-12">
 <form method="post" class="manager">
     <h2 class="content">List: {{ choosed_list.todo_list_name }}</h2>
     <table class="table table-bordered">
@@ -40,5 +41,4 @@
             <a class="btn btn-default button-max-width" href="#" role="button" id="add_new_todo_{{ choosed_list.todo_list_id }}">Add new item</a>
             <a class="btn btn-default button-max-width" href="#" id="rem_list_{{ choosed_list.todo_list_id }}" role="button">Remove list</a>
         </form>
-</div>
 {% endblock %}

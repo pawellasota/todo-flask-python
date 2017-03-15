@@ -2,34 +2,49 @@
 
 {% block navbar %}
     {{ super() }}
-    <a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a>
+    <div class="row row-menu">
+        <div class="col-md-10 col-md-offset-1">
+            <a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a>
+        </div>
+    </div>
 
 {% endblock %}
+
 {% block content %}
     {{ super() }}
     <h2 class="content">Your Todo lists</h2>
-    <div id="list_of_lists">
+    <div id="all_lists">
         {% for list in lists %}
             <a class="btn btn-default btn-large" id="list_{{ list.todo_list_id }}" href="" role="button">{{ list.todo_list_name }}</a>
         {% endfor %}
     </div>
     <a class="btn btn-default button-max-width" href="" id="add_new_list" role="button">Add new list</a>
-    <div id="l_content" class="row" style="padding: 50px; display: none;"></div>
-    <div id="e_content" class="row" style="padding: 50px; display: none;"></div>
-    <div id="a_content" class="row" style="padding: 50px; display: none;"></div>
-    <div id="a_l_content" class="row" style="padding: 50px; display: none;"></div>
-    <div id="info" class="alert alert-success text-centered" hidden></div>
-
+    <div class="row">
+        <div id="l_content" class="col-md-12" style="padding: 10px; display: none;"></div>
+    </div>
+    <div class="row">
+        <div id="e_content" class="col-md-12" style="padding: 10px; display: none;"></div>
+    </div>
+    <div class="row">
+        <div id="a_content" class="col-md-12" style="padding: 10px; display: none;"></div>
+    </div>
+    <div class="row">
+    <div id="a_l_content" class="col-md-12" style="padding: 10px; display: none;"></div>
+    </div>
+    <div class="row">
+        <div id="info" class="alert alert-success text-centered col-md-12" hidden></div>
+    </div>
 {% endblock %}
 {% block scripts %}
 
 <script>
 
 $(document).ready(function() {
-    $(document).on('click', '#list_of_lists a', function (event) {
+    $(document).on('click', '[id^=list_]', function (event) {
         event.preventDefault();
 {#        alert($(this).parent().attr('id'));#}
-        var list_id = $(this).attr('id');
+{#        alert(this.id);#}
+        var list_id = this.id;
         $('div#l_content').slideUp("slow", function () {
             $.ajax({
                 data : { list_id: list_id },
@@ -198,7 +213,7 @@ $(document).ready(function() {
         $.ajax({
             data : {list_name : list_name },
             type : 'POST',
-            async: false,
+{#            async: false,#}
             url : '/addlist',
             success : function (data) {
                 if (data.error){
@@ -208,9 +223,9 @@ $(document).ready(function() {
                 else {
                     $('#info').text("List was added: "+ data.todo_list_name).show();
                     $('#info').delay(2000).fadeOut('slow');
-                    $('#list_of_lists').append('<a class="btn btn-default btn-large" id="list_'+data.todo_list_id+'" ' +
-                        'href="" role="button">'+ data.todo_list_name+'</a>');
-                    alert($('list_'+data.todo_list_id).parent().attr('id'));
+                    $('#all_lists').append('<a class="btn btn-default btn-large" id="list_'+data.todo_list_id+'" ' +
+                      'href="" role="button">'+ data.todo_list_name+'</a>');
+                    $('#a_l_content').slideUp('slow');
                 }
             },
             error : function () {
@@ -245,7 +260,12 @@ $(document).ready(function() {
                 alert("Removing list failed")
             }
         })
+    });
+    $(document).on('click', '.bg-picker', function () {
+        var bgcol = $(this).css('background-color');
+        $('body').css("background-color", bgcol);
     })
+
 });
 </script>
 {% endblock %}
