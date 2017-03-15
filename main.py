@@ -89,14 +89,15 @@ def logout():
 def add_list():
     """ Adds new list for user if method was POST, shows form for add list if method was GET
     """
-    added = None
     if request.method == "POST":
-        added = g.logged_user.add_list(request.form["list_name"])
-        if added == "success":
-            return redirect(url_for("list_todo_lists"))
+        list_name = request.form["list_name"]
+        todo_list = g.logged_user.add_list(list_name)
+        if todo_list:
+            return jsonify({"list_id": todo_list.todo_list_id,
+                            "todo_list_name": todo_list.todo_list_name})
         else:
-            flash("List already exists", "alert alert-danger text-centered")
-    return render_template("add_list.html", added=added)
+            return jsonify({"error": "List already exists"})
+    return render_template("add_list.html")
 
 @app.route("/add", methods=['GET', 'POST'])
 def add():
@@ -130,13 +131,18 @@ def remove():
     todo.delete()
     return jsonify({"todo_name": todo.name})
 
-@app.route("/remove_list/<choosed_list_id>")
-def remove_list(choosed_list_id):
+@app.route("/remove_list")
+def remove_list():
     """ Removes particular list from database
     """
-    list = TodoList.get_by_id(choosed_list_id)
-    list.delete()
-    return redirect("list_todo_lists")
+    list_id = request.args["list_id"]
+    list_id = list_id.strip('rem_list_')
+    list = TodoList.get_by_id(list_id)
+    if list.delete():
+        return jsonify({'list_id': list.todo_list_id,
+                        'list_name': list.todo_list_name})
+    else:
+        return jsonify({'error': 'Delete operation failed'})
 
 @app.route("/edit", methods=['GET', 'POST'])
 def edit():

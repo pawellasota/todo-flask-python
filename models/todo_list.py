@@ -74,3 +74,4 @@ class TodoList:
         conn.execute("delete from lists_allowed where list_id='{}'".format(self.todo_list_id))
         conn.commit()
         conn.close()
+        return 1

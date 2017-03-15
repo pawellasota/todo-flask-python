@@ -19,7 +19,7 @@
                     <th>Priority</th>
                   </tr>
                 </thead>
-                <tbody id="list_items">
+                <tbody>
                 {% for item in list_of_items %}
                     <tr>
                         <td>{{ item.creation_date }}</td>
@@ -38,7 +38,7 @@
               </tbody>
             </table>
             <a class="btn btn-default button-max-width" href="#" role="button" id="add_new_todo_{{ choosed_list.todo_list_id }}">Add new item</a>
-            <a class="btn btn-default button-max-width" href="{{ url_for("remove_list", choosed_list_id=choosed_list.todo_list_id) }}" role="button">Remove list</a>
+            <a class="btn btn-default button-max-width" href="#" id="rem_list_{{ choosed_list.todo_list_id }}" role="button">Remove list</a>
         </form>
 </div>
 {% endblock %}

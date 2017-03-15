@@ -1,18 +1,16 @@
 {% extends "base.html" %}
-{% block title %}
-    Add list
-{% endblock %}
 {% block navbar %}
-    <div><a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a></div>
-    <div><a class="btn btn-default button-max-width" href="{{ url_for("add_list") }}" role="button">Add new list</a></div>
 {% endblock %}
-{% block content %}
-    {{ super() }}
-    <form action="{{ url_for("add_list") }}" method="post" class="manager">
+{% block logo %}
+{% endblock %}
+{% block footer %}
+{% endblock %}
+{% block body %}
+    <form method="post" class="manager">
         <fieldset>
             <legend><h2 class="content">Add new list</h2></legend>
             <label>Enter name for new list (20 chars max)<input type="text" name="list_name" class="inpbutt" required="required" pattern="[A-Za-z0-9 ]{1,20}"></label>
-            <button class="btn btn-default" type="submit">Submit</button>
+            <button class="btn btn-default" type="submit" id="add_list_submit">Submit</button>
         </fieldset>
     </form>
 {% endblock %}

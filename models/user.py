@@ -76,13 +76,15 @@ class User:
         cursor = conn.execute("select todo_list_name from todo_lists where todo_list_name='{}'".format(list_name))
         if len(cursor.fetchall()) > 0:
             conn.close()
-            return "fail"
+            return None
         conn.execute("insert into todo_lists (`todo_list_name`) VALUES('{}')".format(list_name))
         todo_list_id = conn.execute("select todo_list_id from todo_lists where todo_list_name=('{}')".format(list_name)).fetchone()[0]
         conn.execute("insert into lists_allowed (`user_id`, `list_id`) VALUES('{}', '{}')".format(self.user_id, todo_list_id))
+        cursor = conn.execute("select * from todo_lists where todo_list_id=?", (todo_list_id,))
+        rows = cursor.fetchone()
         conn.commit()
         conn.close()
-        return "success"
+        return TodoList(rows[0], rows[1])
 
 class Manager(User):
     """ Class representing manager of todo app.
