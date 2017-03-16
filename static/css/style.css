@@ -74,6 +74,9 @@ h2.content {
 .ft-picker {
     height: 20px;
 }
+.ft-col-picker {
+    height: 50px;
+}
 .menu-item {
     font-size: 20px;
     background-color: #f5f5f5;

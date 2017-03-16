@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $(document).on('click', '[id^=list_]', function (event) {
+    $('#all_lists').on('click', '[id^=list_]', function (event) {
         event.preventDefault();
         var list_id = this.id;
         $('div#l_content').slideUp("slow", function () {
@@ -182,6 +182,7 @@ $(document).ready(function() {
                     $('#all_lists').append('<a class="btn btn-default btn-large" id="list_'+data.todo_list_id+'" ' +
                       'href="" role="button">'+ data.todo_list_name+'</a>');
                     $('#a_l_content').slideUp('slow');
+                    jQuery("#button-list")[0].click();
                 }
             },
             error : function () {
@@ -224,6 +225,10 @@ $(document).ready(function() {
     $(document).on('click', '.ft-picker', function () {
         var font = $(this).css('font-family');
         $('body').css("font-family", font);
+    });
+    $(document).on('click', '.ft-col-picker', function () {
+        var bgcol = $(this).css('background-color');
+        $('body').css("color", bgcol);
     })
 
 });
