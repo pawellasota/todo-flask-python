@@ -25,21 +25,26 @@
                 <div class="row" style="background-color: white;">
                     <div class="col-md-3 module_border">
                         {% block navbar %}
-                            <div class="row row-menu">
+                            <div class="row row-menu back-block">
                                 <div class="col-md-6">
                                     <img src="{{ url_for('static', filename='img/user.png') }}"/>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row row-menu">
-                                        <div class="col-md-12">
+                                        <div class="col-md-12 back-block">
                                             Logged as <strong>{{ session["username"] }}</strong>
                                         </div>
                                     </div>
-                                    <div class="row row-menu">
+                                    <div class="row row-menu back-block">
                                         <div class="col-md-12">
                                             <a class="btn btn-default button-max-width" href="{{ url_for("logout") }}" role="button">Logout</a>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row row-menu">
+                                <div class="col-md-12">
+                                    <a class="btn btn-default button-max-width" href="" role="button" id="button-list">List of lists</a>
                                 </div>
                             </div>
                             <div class="row row-menu">

@@ -2,39 +2,18 @@
 
 {% block navbar %}
     {{ super() }}
-    <div class="row row-menu">
-        <div class="col-md-10 col-md-offset-1">
-            <a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button" id="button-list" style="display: none;">List of lists</a>
-        </div>
-    </div>
-
 {% endblock %}
 
 {% block content %}
     {{ super() }}
-    <h2 class="content">Your Todo lists</h2>
-    <div id="all_lists">
-        {% for list in lists %}
-            <a class="btn btn-default btn-large" id="list_{{ list.todo_list_id }}" href="" role="button">{{ list.todo_list_name }}</a>
-        {% endfor %}
-    </div>
-    <a class="btn btn-default button-max-width" href="" id="add_new_list" role="button">Add new list</a>
-    <div class="row">
-        <div id="l_content" class="col-md-12" style="padding: 10px; display: none;"></div>
-    </div>
-    <div class="row">
-        <div id="e_content" class="col-md-12" style="padding: 10px; display: none;"></div>
-    </div>
-    <div class="row">
-        <div id="a_content" class="col-md-12" style="padding: 10px; display: none;"></div>
-    </div>
-    <div class="row">
+    <div id="all_lists"></div>
+    <div id="l_content" class="col-md-12" style="padding: 10px; display: none;"></div>
+    <div id="e_content" class="col-md-12" style="padding: 10px; display: none;"></div>
+    <div id="a_content" class="col-md-12" style="padding: 10px; display: none;"></div>
     <div id="a_l_content" class="col-md-12" style="padding: 10px; display: none;"></div>
-    </div>
-    <div class="row">
-        <div id="info" class="alert alert-success text-centered col-md-12" hidden></div>
-    </div>
+    <div id="info" class="alert alert-success text-centered col-md-12" hidden></div>
 {% endblock %}
+
 {% block scripts %}
     {{ super() }}
 {% endblock %}

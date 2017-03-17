@@ -1,4 +1,25 @@
 $(document).ready(function() {
+    $(document).on('click', '#button-list', function (event) {
+        event.preventDefault();
+        $.ajax({
+            type: 'GET',
+            url: '/show_lists',
+            success: function (data) {
+                if (data.error) {
+                    $('#info').text(data.error).show();
+                    $('#info').delay(2000).fadeOut('slow');
+                }
+                $('div#l_content').slideUp("slow");
+                $('div#e_content').slideUp("slow");
+                $('div#a_content').slideUp('slow');
+                $('#a_l_content').slideUp('slow');
+                $('#all_lists').html(data);
+            },
+            error: function () {
+                alert("Cannot display lists")
+            }
+        })
+    });
     $('#all_lists').on('click', '[id^=list_]', function (event) {
         event.preventDefault();
         var list_id = this.id;

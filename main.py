@@ -18,6 +18,17 @@ def list_todo_lists():
         return render_template("lists.html", lists=lists)
     return redirect(url_for("index"))
 
+@app.route("/show_lists")
+def show_lists():
+    """ Shows list of todo items stored in the database.
+    """
+    lists = g.logged_user.get_lists()
+    if lists:
+        return render_template("show_lists.html", lists=lists)
+    else:
+        return jsonify({"error" : "No lists available"})
+
+
 @app.route("/user")
 def user():
     """ Shows all lists of todo's of particular user
@@ -36,7 +47,6 @@ def list_todo_items():
         return render_template("list_todo_items.html", list_of_items=list_of_items, choosed_list=todo_list)
 
 @app.route("/")
-@app.route("/index")
 def index():
     """ App root. Depending on type of user ('user' or 'manager') routes him for expected view
     """
@@ -76,6 +86,7 @@ def before_request():
     setattr(g, 'logged_user', None)
     if "username" in session:
         g.logged_user = app.config.logged_user
+
 
 @app.route("/logout")
 def logout():
@@ -181,6 +192,7 @@ def toggle():
 def login():
     """ Shows login form if method was GET. Log user if method was POST.
     """
+    session.pop("username", None)
     if request.method == "POST":
         logged_user = User.get_user(request.form["username"], request.form["password"])
         if logged_user:
@@ -190,19 +202,22 @@ def login():
             return redirect(url_for("index"))
         else:
             flash("Your login data was incorrect", "alert alert-danger text-centered")
+    if "username" in session:
+        session.pop("username", None)
     return render_template("login.html")
-
-# @app.route("/get_todo_list", methods=["POST"])
-# def get_todo_list():
-#     list_id = request.form["list_id"]
 
 
 @app.errorhandler(404)
 def page_not_found(error):
     """ Basic 404 error handle. Redirect to login page.
     """
-    flash("Invalid address: "+str(error), "alert alert-danger text-centered")
-    return render_template("login.html")
+    back_url = url_for("login")
+    if g.logged_user:
+        if g.logged_user.type == "manager":
+            back_url = url_for("manager")
+        else:
+            back_url = url_for("user")
+    return render_template("404.html", back_url=back_url, error=error)
 
 
 if __name__ == "__main__":

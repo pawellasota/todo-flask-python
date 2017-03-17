@@ -28,7 +28,7 @@ class User:
                 None: if authentication fails
         """
         conn = sqlite3.connect(cls.path)
-        cursor = conn.execute("SELECT * FROM users")
+        cursor = conn.execute("SELECT * FROM users where username=? and password=?", (login, password))
         for row in cursor.fetchall():
             if row[1] == login and row[2] == password:
                 conn.close()

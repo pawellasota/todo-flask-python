@@ -81,3 +81,9 @@ h2.content {
     font-size: 20px;
     background-color: #f5f5f5;
 }
+.back-block {
+    background-color: #f5f5f5;
+}
+.hidden {
+    display: none;
+}

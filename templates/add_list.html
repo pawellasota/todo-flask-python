@@ -1,18 +1,7 @@
-{% extends "base.html" %}
-{% block navbar %}
-{% endblock %}
-{% block logo %}
-{% endblock %}
-{% block footer %}
-{% endblock %}
-{% block scripts %}
-{% endblock %}
-{% block body %}
-    <form method="post" class="manager">
-        <fieldset>
-            <legend><h2 class="content">Add new list</h2></legend>
-            <label>Enter name for new list (20 chars max)<input type="text" name="list_name" class="inpbutt" required="required" pattern="[A-Za-z0-9 ]{1,20}"></label>
-            <button class="btn btn-default" type="submit" id="add_list_submit">Submit</button>
-        </fieldset>
-    </form>
-{% endblock %}
+<form method="post" class="manager">
+    <fieldset>
+        <legend><h2 class="content">Add new list</h2></legend>
+        <label>Enter name for new list (20 chars max)<input type="text" name="list_name" class="inpbutt" required="required" pattern="[A-Za-z0-9 ]{1,20}"></label>
+        <button class="btn btn-default" type="submit" id="add_list_submit">Submit</button>
+    </fieldset>
+</form>
