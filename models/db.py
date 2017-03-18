@@ -1,39 +1,32 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-# from sqlalchemy import SQLAlchemy
-import os
+from main import db
 
 
-engine = create_engine('sqlite:////' + os.getcwd() + '/db/db.sqlite', echo=True)
-Base = declarative_base(engine)
-metadata = Base.metadata
-Session = sessionmaker(bind=engine)
-session_db = Session()
-# db = SQLAlchemy(app)
-
-class Todo_items(Base):
+class Todo_items(db.Model):
     __tablename__ = 'todo_items'
-    __table_args__ = {'autoload':True}
 
-    def __init__(self, item_content, todo_list_id, priority, due_date, item_id=None, done=False, creation_date=None):
-        self.item_content = item_content
-        self.todo_list_id = todo_list_id
-        self.priority = priority
-        self.due_date = due_date
-        self.item_id = item_id
-        self.done = done
-        self.creation_date = creation_date
+    name = db.Column(db.String(80))
+    list_id = db.Column(db.Integer, nullable=False)
+    priority = db.Column(db.Integer)
+    due_date = db.Column(db.String(10))
+    id = db.Column(db.Integer, primary_key=True)
+    done = db.Column(db.String(6))
+    creation_date = db.Column(db.String(10))
 
+    def __repr__(self):
+        return 'Todo: ' % self.name
 
-class Todo_lists(Base):
+class Todo_lists(db.Model):
     __tablename__ = 'todo_lists'
-    __table_args__ = {'autoload':True}
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80))
 
-class Lists_allowed(Base):
+class Lists_allowed(db.Model):
     __tablename__ = 'lists_allowed'
-    __table_args__ = {'autoload':True}
+    id = db.Column(db.Integer, primary_key=True)
+    list_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
 
-class Users(Base):
-    __tablename__ = 'users'
-    __table_args__ = {'autoload':True}
+#
+# class Users(Base):
+#     __tablename__ = 'users'
+#     __table_args__ = {'autoload':True}

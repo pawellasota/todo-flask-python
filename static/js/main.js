@@ -1,4 +1,7 @@
 $(document).ready(function() {
+    $(function () {
+        jQuery("#button-list")[0].click();
+    });
     $(document).on('click', '#button-list', function (event) {
         event.preventDefault();
         $.ajax({
@@ -160,7 +163,7 @@ $(document).ready(function() {
             success : function (data) {
                 var trigger_button = choosed_list_id.replace('add_todo_submit_','');
                 jQuery("#list_"+trigger_button)[0].click();
-                $('#info').text("Todo added: "+ data.item_content).show();
+                $('#info').text("Todo added: "+ data.name).show();
                 $('#info').delay(2000).fadeOut('slow');
             },
             error : function (data) {
@@ -198,10 +201,10 @@ $(document).ready(function() {
                     $('#info').delay(2000).fadeOut('slow');
                 }
                 else {
-                    $('#info').text("List was added: "+ data.todo_list_name).show();
+                    $('#info').text("List was added: "+ data.new_list_name).show();
                     $('#info').delay(2000).fadeOut('slow');
-                    $('#all_lists').append('<a class="btn btn-default btn-large" id="list_'+data.todo_list_id+'" ' +
-                      'href="" role="button">'+ data.todo_list_name+'</a>');
+                    $('#all_lists').append('<a class="btn btn-default btn-large" id="list_'+data.new_list_id+'" ' +
+                      'href="" role="button">'+ data.new_list_name+'</a>');
                     $('#a_l_content').slideUp('slow');
                     jQuery("#button-list")[0].click();
                 }
@@ -257,7 +260,6 @@ $(document).ready(function() {
 function Remove() {
     var choosed_user = document.getElementById("user_to_add").options[document.getElementById("user_to_add").selectedIndex].text;
     var choosed_list = document.getElementById("list_to_add").options[document.getElementById("list_to_add").selectedIndex].text;
-    // alert(choosed_user+choosed_list);
     window.location = Flask.url_for("manager", {"choosed_user": choosed_user, "choosed_list": choosed_list});
     return false;
 }

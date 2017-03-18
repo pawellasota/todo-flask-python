@@ -1,30 +1,24 @@
 from flask import Flask, render_template, request, url_for, redirect, session, g, flash, jsonify
-# from sqlalchemy import SQLAlchemy
-
-from models.todo import Todo
+from flask_sqlalchemy import SQLAlchemy
+import models.todo
 import models.user
 import models.todo_list
 from flask_jsglue import JSGlue
-import os, datetime
+import os
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////' + os.getcwd() + '/db/db.sqlite'
 app.secret_key = os.urandom(24)
+db = SQLAlchemy(app)
 jsglue = JSGlue(app)
 
-
-@app.route("/get_by_id")
-def get_by_id():
-
-    added_todo = Todo.add("Nowe todo", 21, 4, '2017-04-01')
-    return str(added_todo.item_content)
 
 @app.route("/list_todo_lists")
 def list_todo_lists():
     """ Shows list of todo items stored in the database.
     """
-    lists = g.logged_user.get_lists()
-    if lists:
-        return render_template("lists.html", lists=lists)
+    if g.logged_user:
+        return render_template("lists.html")
     return redirect(url_for("index"))
 
 @app.route("/show_lists")
@@ -35,7 +29,7 @@ def show_lists():
     if lists:
         return render_template("show_lists.html", lists=lists)
     else:
-        return jsonify({"error" : "No lists available"})
+        return jsonify({"error": "No lists available"})
 
 
 @app.route("/user")
@@ -51,7 +45,7 @@ def list_todo_items():
     """
     list_id = request.args["list_id"]
     if list_id:
-        todo_list = TodoList.get_by_id(list_id.strip('list_'))
+        todo_list = models.todo_list.TodoList.get_by_id(list_id.strip('list_'))
         list_of_items = todo_list.get_to_do_items()
         return render_template("list_todo_items.html", list_of_items=list_of_items, choosed_list=todo_list)
 
@@ -111,10 +105,10 @@ def add_list():
     """
     if request.method == "POST":
         list_name = request.form["list_name"]
-        todo_list = g.logged_user.add_list(list_name)
-        if todo_list:
-            return jsonify({"list_id": todo_list.todo_list_id,
-                            "todo_list_name": todo_list.todo_list_name})
+        new_list = g.logged_user.add_list(list_name)
+        if new_list:
+            return jsonify({"new_list_id": new_list.id,
+                            "new_list_name": new_list.name})
         else:
             return jsonify({"error": "List already exists"})
     return render_template("add_list.html")
@@ -126,13 +120,11 @@ def add():
     """
     if request.method == "POST":
         choosed_list_id = request.form["choosed_list_id"]
-        new_todo_item = Todo(request.form["todo_name"], choosed_list_id.strip("add_todo_submit_"), request.form["todo_priority"],
-                             request.form["todo_due_date"])
-        TodoList.add_todo_item(new_todo_item)
-        new_todo_item = Todo.get_by_name(request.form["todo_name"], choosed_list_id.strip("add_todo_submit_"))
+        new_todo_item = models.todo_list.TodoList.add_todo_item(request.form["todo_name"], choosed_list_id.strip("add_todo_submit_"),
+                                                request.form["todo_priority"], request.form["todo_due_date"])
         return jsonify({
-                        'item_id': new_todo_item.id,
-                        'item_content': new_todo_item.name,
+                        'id': new_todo_item.id,
+                        'name': new_todo_item.name,
                         'list_id': new_todo_item.list_id,
                         'priority': new_todo_item.priority,
                         'due_date': new_todo_item.due_date,
@@ -140,14 +132,14 @@ def add():
                         'creation_date': new_todo_item.creation_date
                         })
     choosed_list_id = request.args["choosed_list_id"]
-    choosed_list = TodoList.get_by_id(choosed_list_id.strip("add_new_todo_"))
+    choosed_list = models.todo_list.TodoList.get_by_id(choosed_list_id.strip("add_new_todo_"))
     return render_template("add_item.html", choosed_list=choosed_list)
 
 @app.route("/remove")
 def remove():
     """ Removes todo item with selected id from the database """
     todo_id = request.args["todo_id"]
-    todo = Todo.get_by_id(todo_id.strip("remove_"))
+    todo = models.todo.Todo.get_by_id(todo_id.strip("remove_"))
     todo.delete()
     return jsonify({"todo_name": todo.name})
 
@@ -157,10 +149,10 @@ def remove_list():
     """
     list_id = request.args["list_id"]
     list_id = list_id.strip('rem_list_')
-    list = TodoList.get_by_id(list_id)
+    list = models.todo_list.TodoList.get_by_id(list_id)
     if list.delete():
-        return jsonify({'list_id': list.todo_list_id,
-                        'list_name': list.todo_list_name})
+        return jsonify({'list_id': list.id,
+                        'list_name': list.name})
     else:
         return jsonify({'error': 'Delete operation failed'})
 
@@ -173,15 +165,15 @@ def edit():
 
     if request.method == "POST":
         todo_id = request.form["todo_id"]
-        todo = Todo.get_by_id(todo_id.strip("update_todo_"))
+        todo = models.todo.Todo.get_by_id(todo_id.strip("update_todo_"))
         todo.name = request.form["todo_name"]
         todo.due_date = request.form["todo_due_date"]
         todo.priority = request.form["todo_priority"]
         todo.save()
         return jsonify({"todo_name": todo.name})
     todo_id = request.args["todo_id"]
-    todo = Todo.get_by_id(todo_id.strip("edit_"))
-    list_name = TodoList.get_list_name_by_id(todo.list_id)
+    todo = models.todo.Todo.get_by_id(todo_id.strip("edit_"))
+    list_name = models.todo_list.TodoList.get_list_name_by_id(todo.list_id)
     return render_template("edit_todo.html", todo=todo, list_name=list_name)
 
 
@@ -189,7 +181,7 @@ def edit():
 def toggle():
     """ Toggles the state of todo item """
     todo_id = request.args["todo_id"]
-    todo = Todo.get_by_id(todo_id.strip("todo_"))
+    todo = models.todo.Todo.get_by_id(todo_id.strip("todo_"))
     if todo.done == "True":
         todo.done = "False"
     else:
@@ -203,7 +195,7 @@ def login():
     """
     session.pop("username", None)
     if request.method == "POST":
-        logged_user = User.get_user(request.form["username"], request.form["password"])
+        logged_user = models.user.User.get_user(request.form["username"], request.form["password"])
         if logged_user:
             session["username"] = logged_user.username
             app.config.logged_user = logged_user

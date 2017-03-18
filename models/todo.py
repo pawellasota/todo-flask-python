@@ -1,5 +1,5 @@
-import sqlite3
 from models.db import *
+
 
 
 class Todo:
@@ -13,7 +13,6 @@ class Todo:
             done (['True', 'False']: describes if todo item is done or not
             creation_date (str): date of creation of todo item
     """
-    path = 'db/db.sqlite'
 
     def __init__(self, name, list_id, priority, due_date, id=None, done=False, creation_date=None):
         self.id = id
@@ -33,37 +32,32 @@ class Todo:
 
     def save(self):
         """ Saves/updates todo item in database """
-        conn = sqlite3.connect("db/db.sqlite")
-        conn.execute("update todo_items set item_content='{}', priority='{}', due_date='{}', done='{}'"
-                              " where item_id='{}'".format(self.name, self.priority, self.due_date, self.done, self.id))
-        conn.commit()
-        conn.close()
-    @classmethod
-    def add(cls, item_content, todo_list_id, priority, due_date=None, id=None, done=False):
-        """ Removes todo item from the database """
-        todo_to_add = Todo_items(item_content, todo_list_id, priority, due_date, id, done)
-        session_db.add(todo_to_add)
-        session_db.commit()
-        return todo_to_add
+        todo_to_update = Todo_items.query.filter_by(id=self.id).first()
+        todo_to_update.name = self.name
+        todo_to_update.list_id = self.list_id
+        todo_to_update.priority = self.priority
+        todo_to_update.due_date = self.due_date
+        todo_to_update.creation_date = self.creation_date
+        todo_to_update.done = self.done
+        db.session.commit()
 
     def delete(self):
         """ Removes todo item from the database """
-        deleted_todo = session_db.query(Todo_items).filter_by(item_id=self.id).first()
-        session_db.delete(deleted_todo)
-        session_db.commit()
+        deleted_todo = db.session.query(Todo_items).filter_by(id=self.id).first()
+        db.session.delete(deleted_todo)
+        db.session.commit()
 
 
     @classmethod
     def get_by_id(cls, id):
         """Returns Todo object by id"""
-        res = session_db.query(Todo_items).filter_by(item_id=id).first()
-        todo = Todo(res.item_content, res.todo_list_id, res.priority, res.due_date, res.item_id, res.done, res.creation_date)
+        res = db.session.query(Todo_items).filter_by(id=id).first()
+        todo = Todo(res.name, res.list_id, res.priority, res.due_date, res.id, res.done, res.creation_date)
         return todo
 
 
     @classmethod
     def get_by_name(cls, name, list_id):
-        res = session_db.query(Todo_items).filter_by(item_content=name, todo_list_id=list_id).first()
-        todo = Todo(res.item_content, res.todo_list_id, res.priority, res.due_date, res.item_id, res.done,
-                    res.creation_date)
+        res = db.session.query(Todo_items).filter_by(name=name, list_id=list_id).first()
+        todo = Todo(res.name, res.list_id, res.priority, res.due_date, res.id, res.done, res.creation_date)
         return todo

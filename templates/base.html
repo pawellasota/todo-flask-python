@@ -44,7 +44,10 @@
                             </div>
                             <div class="row row-menu">
                                 <div class="col-md-12">
-                                    <a class="btn btn-default button-max-width" href="" role="button" id="button-list">List of lists</a>
+                                    {% block menu %}
+                                        <a class="btn btn-default button-max-width" href="" role="button" id="button-list">List of lists</a>
+                                        <a class="btn btn-default button-max-width" href="" id="add_new_list" role="button">Add new list</a>
+                                    {% endblock %}
                                 </div>
                             </div>
                             <div class="row row-menu">

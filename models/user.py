@@ -1,5 +1,7 @@
 import sqlite3
 from models.todo_list import TodoList
+import models.db
+import main
 
 class User:
     """ Class representing user of todo app.
@@ -56,7 +58,7 @@ class User:
         """
         lists = []
         conn = sqlite3.connect(User.path)
-        cursor = conn.execute("select todo_list_id, todo_list_name from todo_lists where todo_list_id in "
+        cursor = conn.execute("select id, name from todo_lists where id in "
                               "(select distinct list_id from lists_allowed where "
                               "lists_allowed.user_id='{}')".format(self.user_id))
         for row in cursor.fetchall():
@@ -72,19 +74,16 @@ class User:
                 "success" (str): if list was added
                 "fail": if list with name given already exists in database
         """
-        conn = sqlite3.connect(User.path)
-        cursor = conn.execute("select todo_list_name from todo_lists where todo_list_name='{}'".format(list_name))
-        if len(cursor.fetchall()) > 0:
-            conn.close()
+        res = main.db.session.query(models.db.Todo_lists).filter_by(name=list_name).first()
+        if res:
             return None
-        conn.execute("insert into todo_lists (`todo_list_name`) VALUES('{}')".format(list_name))
-        todo_list_id = conn.execute("select todo_list_id from todo_lists where todo_list_name=('{}')".format(list_name)).fetchone()[0]
-        conn.execute("insert into lists_allowed (`user_id`, `list_id`) VALUES('{}', '{}')".format(self.user_id, todo_list_id))
-        cursor = conn.execute("select * from todo_lists where todo_list_id=?", (todo_list_id,))
-        rows = cursor.fetchone()
-        conn.commit()
-        conn.close()
-        return TodoList(rows[0], rows[1])
+        list_to_add = models.db.Todo_lists(name=list_name)
+        main.db.session.add(list_to_add)
+        main.db.session.commit()
+        list_allowed_to_add = models.db.Lists_allowed(list_id=list_to_add.id, user_id=self.user_id)
+        main.db.session.add(list_allowed_to_add)
+        main.db.session.commit()
+        return TodoList(list_to_add.id, list_to_add.name)
 
 class Manager(User):
     """ Class representing manager of todo app.
@@ -102,8 +101,8 @@ class Manager(User):
         """
         list_names = []
         conn = sqlite3.connect(User.path)
-        cursor = conn.execute("SELECT todo_list_name FROM todo_lists, lists_allowed "
-                              "where lists_allowed.user_id='{}' and lists_allowed.list_id=todo_lists.todo_list_id".format(user_id))
+        cursor = conn.execute("SELECT name FROM todo_lists, lists_allowed "
+                              "where lists_allowed.user_id='{}' and lists_allowed.list_id=todo_lists.id".format(user_id))
         for row in cursor.fetchall():
             list_names.append(row)
         conn.close()
@@ -114,7 +113,7 @@ class Manager(User):
         """
         list_names = []
         conn = sqlite3.connect(User.path)
-        cursor = conn.execute("SELECT todo_list_name FROM todo_lists")
+        cursor = conn.execute("SELECT name FROM todo_lists")
         for row in cursor.fetchall():
             list_names.append(row)
         conn.close()
@@ -134,7 +133,7 @@ class Manager(User):
         """ Returns id of list with name given
         """
         conn = sqlite3.connect(User.path)
-        cursor = conn.execute("select todo_list_id from todo_lists where todo_list_name='{}'".format(list_name))
+        cursor = conn.execute("select id from todo_lists where name='{}'".format(list_name))
         list_id = cursor.fetchone()[0]
         conn.close()
         return list_id

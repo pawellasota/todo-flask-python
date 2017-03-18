@@ -1,34 +1,32 @@
-<form method="post" class="manager">
-    <h2 class="content">List: {{ choosed_list.todo_list_name }}</h2>
-    <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Creation date</th>
-            <th>Todo name</th>
-            <th>Status</th>
-            <th>Due Date</th>
-            <th>Priority</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for item in list_of_items %}
-            <tr>
-                <td>{{ item.creation_date }}</td>
-                <td>{{ item.name }}</td>
-                {% if item.done=="True" %}
-                    <td><input type="checkbox" name="item_check" class="todo_{{ item.id }}" checked="checked"></td>
-                {% else %}
-                    <td><input type="checkbox" name="item_check" class="todo_{{ item.id }}"></td>
-                {% endif %}
-                <td>{{ item.due_date }}</td>
-                <td><input type="range" name="priority" min="0" max="10" value="{{ item.priority }}" disabled></td>
-                <td><a class="btn btn-default" href="" id="remove_{{ item.id }}" role="button">Remove</a></td>
-                <td><a class="btn btn-default" href="" id="edit_{{ item.id }}" role="button">Edit</a></td>
-            </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <a class="btn btn-default button-max-width" href="#" role="button" id="add_new_todo_{{ choosed_list.todo_list_id }}">Add new item</a>
-    <a class="btn btn-default button-max-width" href="#" id="rem_list_{{ choosed_list.todo_list_id }}" role="button">Remove list</a>
-</form>
+<h2 class="content">List: {{ choosed_list.name }}</h2>
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Creation date</th>
+        <th>Todo name</th>
+        <th>Status</th>
+        <th>Due Date</th>
+        <th>Priority</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for item in list_of_items %}
+        <tr>
+            <td>{{ item.creation_date }}</td>
+            <td>{{ item.name }}</td>
+            {% if item.done=="True" %}
+                <td><input type="checkbox" name="item_check" class="todo_{{ item.id }}" checked="checked"></td>
+            {% else %}
+                <td><input type="checkbox" name="item_check" class="todo_{{ item.id }}"></td>
+            {% endif %}
+            <td>{{ item.due_date }}</td>
+            <td><input type="range" name="priority" min="0" max="10" value="{{ item.priority }}" disabled></td>
+            <td><a class="btn btn-default" href="" id="remove_{{ item.id }}" role="button">Remove</a></td>
+            <td><a class="btn btn-default" href="" id="edit_{{ item.id }}" role="button">Edit</a></td>
+        </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<a class="btn btn-default button-max-width" href="#" role="button" id="add_new_todo_{{ choosed_list.id }}">Add new item</a>
+<a class="btn btn-default button-max-width" href="#" id="rem_list_{{ choosed_list.id }}" role="button">Remove list</a>
 

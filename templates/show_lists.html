@@ -1,8 +1,8 @@
+{% if list %}
 <h2 class="content">Your Todo lists</h2>
-<div id="all_lists">
-    {% for list in lists %}
-        <a class="btn btn-default btn-large" id="list_{{ list.todo_list_id }}" href="" role="button">{{ list.todo_list_name }}</a>
-    {% endfor %}
-</div>
-<a class="btn btn-default button-max-width" href="" id="add_new_list" role="button">Add new list</a>
+{% endif %}
+{% for list in lists %}
+    <a class="btn btn-default btn-large" id="list_{{ list.id }}" href="" role="button">{{ list.name }}</a>
+{% endfor %}
+
 
