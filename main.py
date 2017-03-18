@@ -1,13 +1,22 @@
 from flask import Flask, render_template, request, url_for, redirect, session, g, flash, jsonify
+# from sqlalchemy import SQLAlchemy
+
 from models.todo import Todo
-from models.user import User
-from models.todo_list import TodoList
+import models.user
+import models.todo_list
 from flask_jsglue import JSGlue
 import os, datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 jsglue = JSGlue(app)
+
+
+@app.route("/get_by_id")
+def get_by_id():
+
+    added_todo = Todo.add("Nowe todo", 21, 4, '2017-04-01')
+    return str(added_todo.item_content)
 
 @app.route("/list_todo_lists")
 def list_todo_lists():
@@ -222,3 +231,4 @@ def page_not_found(error):
 
 if __name__ == "__main__":
     app.run(debug=True)
+

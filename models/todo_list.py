@@ -1,6 +1,6 @@
 import sqlite3
 import datetime
-from models.todo import Todo
+import models.todo
 
 
 class TodoList:

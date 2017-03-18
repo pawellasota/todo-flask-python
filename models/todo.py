@@ -1,5 +1,5 @@
 import sqlite3
-import datetime
+from models.db import *
 
 
 class Todo:
@@ -38,29 +38,32 @@ class Todo:
                               " where item_id='{}'".format(self.name, self.priority, self.due_date, self.done, self.id))
         conn.commit()
         conn.close()
+    @classmethod
+    def add(cls, item_content, todo_list_id, priority, due_date=None, id=None, done=False):
+        """ Removes todo item from the database """
+        todo_to_add = Todo_items(item_content, todo_list_id, priority, due_date, id, done)
+        session_db.add(todo_to_add)
+        session_db.commit()
+        return todo_to_add
 
     def delete(self):
         """ Removes todo item from the database """
-        conn = sqlite3.connect(Todo.path)
-        conn.execute("delete from todo_items where item_id='{}'".format(self.id))
-        conn.commit()
-        conn.close()
+        deleted_todo = session_db.query(Todo_items).filter_by(item_id=self.id).first()
+        session_db.delete(deleted_todo)
+        session_db.commit()
+
 
     @classmethod
     def get_by_id(cls, id):
         """Returns Todo object by id"""
-        conn = sqlite3.connect(cls.path)
-        cursor = conn.execute("select * from todo_items where item_id='{}'".format(id))
-        result = cursor.fetchone()
-        todo = Todo(result[1], result[2], result[4], result[5], result[0], result[3], result[6])
-        conn.close()
+        res = session_db.query(Todo_items).filter_by(item_id=id).first()
+        todo = Todo(res.item_content, res.todo_list_id, res.priority, res.due_date, res.item_id, res.done, res.creation_date)
         return todo
+
 
     @classmethod
     def get_by_name(cls, name, list_id):
-        conn = sqlite3.connect(cls.path)
-        cursor = conn.execute("select * from todo_items where item_content=? and todo_list_id=?", (name, list_id))
-        result = cursor.fetchone()
-        conn.commit()
-        conn.close()
-        return Todo(result[1], result[2], result[4], result[5], result[0], result[3], result[6])
+        res = session_db.query(Todo_items).filter_by(item_content=name, todo_list_id=list_id).first()
+        todo = Todo(res.item_content, res.todo_list_id, res.priority, res.due_date, res.item_id, res.done,
+                    res.creation_date)
+        return todo
