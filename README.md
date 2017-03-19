@@ -64,10 +64,14 @@ this is file where routes are defined as well.
 
 Required modules to pre-install
 
-* Flask — microframework for Python based on Werkzeug and Jinja 2 
+* Flask — microframework for Python based on Werkzeug and Jinja 2, with hes sub-modules 
     
     
-    $ pip install Flask
+    $ pip install Flask, render_template, request, url_for, redirect, session, g, flash, jsonify
+    
+
+    
+
 * JSGlue - provide a Flask object with methods to handle url_for in JavaScript
 
 
@@ -77,15 +81,16 @@ Required modules to pre-install
 
     $ pip install flask-sqlalchemy
     
+* virtualenv(optional) - enables multiple side-by-side installations of Python, one for each project.
+
+
+    $ sudo apt-get install python-virtualenv
+
 #Getting Started
 
 To get started, you'll want to first clone this GitHub repository locally:
 
     $ git clone https://github.com/CodecoolKrakow20161/python-flask-todo-pawellasota
-
-Install virtualenv(optional) - enables multiple side-by-side installations of Python, one for each project.
-    
-    $ sudo apt-get install python-virtualenv
 
 In case of problems with database or you just want to return to default data (in /db/db.sqlite):
 Create database 'db' in SQLite3, then import sql database from sql file located at /db/script.sql
