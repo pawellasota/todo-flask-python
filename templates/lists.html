@@ -1,59 +1,19 @@
 {% extends "base.html" %}
-{% block title %}
-    Lists
-{% endblock %}
+
 {% block navbar %}
-    <a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a>
-    <a class="btn btn-default button-max-width" href="{{ url_for("add_list") }}" role="button">Add new list</a>
+    {{ super() }}
 {% endblock %}
+
 {% block content %}
     {{ super() }}
-    {% if choosed_list %}
-        <h2 class="content">List: {{ choosed_list.todo_list_name }}</h2>
-    {% else %}
-        <h2 class="content">Your Todo lists</h2>
-    {% endif %}
-    {% if lists %}
-        {% for list in lists %}
-            <a class="btn btn-default btn-large" href="{{ url_for("list_todo_items", choosed_list_id=list.todo_list_id) }}" role="button">{{ list.todo_list_name }}</a>
-        {% endfor %}
-    {% endif %}
-    {% if list_of_items %}
-        <form method="post" class="manager">
-            <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Creation date</th>
-                    <th>Todo name</th>
-                    <th>Status</th>
-                    <th>Due Date</th>
-                    <th>Priority</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {% for item in list_of_items %}
-                    <tr>
-                        <td>{{ item.creation_date }}</td>
-                        <td>{{ item.name }}</td>
-                        {% if item.done=="True" %}
-                            <td><input type="checkbox" name="item_check" checked="checked" onchange="window.location='{{ url_for("toggle", todo_id=item.id, checked="False") }}';"></td>
-                        {% else %}
-                            <td><input type="checkbox" name="item_check" onchange="window.location='{{ url_for("toggle", todo_id=item.id, checked="True") }}';"></td>
-                        {% endif %}
-                        <td>{{ item.due_date }}</td>
-                        <td><input type="range" name="priority" min="0" max="10" value="{{ item.priority }}" disabled></td>
-                        <td><a class="btn btn-default" href="{{ url_for("remove", todo_id=item.id, choosed_list_id=choosed_list.todo_list_id) }}" id="remove_{{ item.id }}" role="button">Remove</a></td>
-                        <td><a class="btn btn-default" href="{{ url_for("edit", todo_id=item.id, choosed_list_id=choosed_list.todo_list_id) }}" role="button">Edit</a ></td>
-                    </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            <a class="btn btn-default button-max-width" href="{{ url_for("add", choosed_list_id=choosed_list.todo_list_id) }}" role="button">Add new item</a>
-            <a class="btn btn-default button-max-width" href="{{ url_for("remove_list", choosed_list_id=choosed_list.todo_list_id) }}" role="button">Remove list</a>
-        </form>
+    <div id="all_lists"></div>
+    <div id="l_content" class="col-md-12" style="padding: 10px; display: none;"></div>
+    <div id="e_content" class="col-md-12" style="padding: 10px; display: none;"></div>
+    <div id="a_content" class="col-md-12" style="padding: 10px; display: none;"></div>
+    <div id="a_l_content" class="col-md-12" style="padding: 10px; display: none;"></div>
+    <div id="info" class="alert alert-success text-centered col-md-12" hidden></div>
+{% endblock %}
 
-    {% elif choosed_list %}
-        <a class="btn btn-default button-max-width" href="{{ url_for("add", choosed_list_id=choosed_list.todo_list_id) }}" role="button">Add new item</a>
-        <a class="btn btn-default button-max-width" href="{{ url_for("remove_list", choosed_list_id=choosed_list.todo_list_id) }}" role="button">Remove list</a>
-    {% endif %}
+{% block scripts %}
+    {{ super() }}
 {% endblock %}

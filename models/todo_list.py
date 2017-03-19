@@ -1,33 +1,27 @@
-import sqlite3
 import datetime
-from models.todo import Todo
-
+import models.todo
+import models.db
+import main
 
 class TodoList:
     """ Class representing todo item list.
         Args:
-            todo_list_id (int): id of list where todo item is
-            todo_list_name (str): name of todo list
+            list_id (int): id of list where todo item is
+            name (str): name of todo list
     """
-    path = 'db/db.sqlite'
 
-    def __init__(self, todo_list_id, todo_list_name):
-        self.todo_list_id = todo_list_id
-        self.todo_list_name = todo_list_name
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
 
     @classmethod
-    def add_todo_item(cls, todo):
-        """ Adds new todo item to data base.
-            Args:
-                todo (obj): todo object to add
-        """
-        conn = sqlite3.connect(cls.path)
+    def add_todo_item(cls, name, list_id, priority, due_date, done="False"):
         creation_date = datetime.date.today()
-        conn.execute("insert into todo_items (item_content, todo_list_id, done, priority, due_date,"
-                     "creation_date) values('{}','{}','{}','{}','{}','{}')"
-                     .format(todo.name, todo.list_id, False, todo.priority, todo.due_date, creation_date))
-        conn.commit()
-        conn.close()
+        todo_to_add = models.db.Todo_items(name=name, list_id=list_id, priority=priority, due_date=due_date,
+                                 done=done, creation_date=creation_date)
+        main.db.session.add(todo_to_add)
+        main.db.session.commit()
+        return todo_to_add
 
     @classmethod
     def get_by_id(cls, id):
@@ -35,42 +29,35 @@ class TodoList:
             Args:
                 id (int): todo list id
         """
-        conn = sqlite3.connect(cls.path)
-        cursor = conn.execute("select * from todo_lists where todo_list_id='{}'".format(id))
-        result = cursor.fetchone()
-        todoList = TodoList(result[0], result[1])
-        conn.close()
-        return todoList
+        res = main.db.session.query(models.db.Todo_lists).filter_by(id=id).first()
+        todo_list = TodoList(res.id, res.name)
+        return todo_list
+
 
     def get_to_do_items(self):
         """ Returns todo items for particular list
         """
         lists = []
-        conn = sqlite3.connect(TodoList.path)
-        cursor = conn.execute("select * from todo_items where todo_list_id='{}' order by priority desc".format(self.todo_list_id))
-        for row in cursor.fetchall():
-            lists.append(Todo(row[1], row[2], row[4], row[5], id=row[0], done=row[3], creation_date=row[6]))
-        conn.close()
+        res = main.db.session.query(models.db.Todo_items).filter_by(list_id=self.id).order_by("priority desc")
+        for row in res:
+            lists.append(models.todo.Todo(row.name, row.list_id, row.priority, row.due_date, row.id, row.done, row.creation_date))
         return lists
 
     @classmethod
     def get_list_name_by_id(cls, id):
-       """ Returns list name containing particular id
+        """ Returns list name containing particular id
             Args:
                 id (int): id of list
-       """
-       conn = sqlite3.connect(cls.path)
-       cursor = conn.execute("select todo_list_name from todo_lists where todo_list_id='{}'".format(id))
-       name = cursor.fetchone()[0]
-       conn.close()
-       return name
+        """
+        res = main.db.session.query(models.db.Todo_lists).filter_by(id=id).first()
+        return res.name
+
 
     def delete(self):
         """ Removes list from database
         """
-        conn = sqlite3.connect(TodoList.path)
-        conn.execute("delete from todo_lists where todo_list_id='{}'".format(self.todo_list_id))
-        conn.execute("delete from todo_items where todo_list_id='{}'".format(self.todo_list_id))
-        conn.execute("delete from lists_allowed where list_id='{}'".format(self.todo_list_id))
-        conn.commit()
-        conn.close()
+        main.db.session.query(models.db.Todo_lists).filter_by(id=self.id).delete()
+        main.db.session.query(models.db.Todo_items).filter_by(list_id=self.id).delete()
+        main.db.session.query(models.db.Lists_allowed).filter_by(list_id=self.id).delete()
+        main.db.session.commit()
+        return 1

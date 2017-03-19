@@ -10,27 +10,27 @@ INSERT INTO `users` (user_id,username,password,list_allowed_id,type) VALUES (1,'
  (2,'user2','pass',2,'user'),
  (3,'manager','pass',NULL,'manager');
 CREATE TABLE "todo_lists" (
-	`todo_list_id`	INTEGER,
-	`todo_list_name`	TEXT,
-	PRIMARY KEY(todo_list_id)
+	`id`	INTEGER,
+	`name`	TEXT,
+	PRIMARY KEY(id)
 );
-INSERT INTO `todo_lists` (todo_list_id,todo_list_name) VALUES (1,'Shopping list'),
+INSERT INTO `todo_lists` (id,name) VALUES (1,'Shopping list'),
  (2,'Read cool books'),
  (3,'Collect money'),
  (4,'This week'),
  (5,'Baby'),
  (6,'Auto');
 CREATE TABLE "todo_items" (
-	`item_id`	INTEGER,
-	`item_content`	TEXT,
-	`todo_list_id`	INTEGER,
+	`id`	INTEGER,
+	`name`	TEXT,
+	`list_id`	INTEGER,
 	`done`	TEXT,
 	`priority`	INTEGER,
 	`due_date`	TEXT,
 	`creation_date`	TEXT,
-	PRIMARY KEY(item_id)
+	PRIMARY KEY(id)
 );
-INSERT INTO `todo_items` (item_id,item_content,todo_list_id,done,priority,due_date,creation_date) VALUES (1,'Beers',1,'False',10,'2017-03-22','2017-03-04'),
+INSERT INTO `todo_items` (id,name,list_id,done,priority,due_date,creation_date) VALUES (1,'Beers',1,'False',10,'2017-03-22','2017-03-04'),
  (2,'Bread',1,'False',2,'2017-03-14','2017-03-04'),
  (3,'Milk',1,'False',4,'2017-03-14','2017-03-04'),
  (4,'Coffee',1,'False',6,'2017-03-25','2017-03-04'),

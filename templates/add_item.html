@@ -1,26 +1,18 @@
-{% extends "base.html" %}
-{% block title %}
-    Add item
-{% endblock %}
-{% block navbar %}
-    <a class="btn btn-default button-max-width" href="{{ url_for("list_todo_lists") }}" role="button">List of lists</a>
-    <a class="btn btn-default button-max-width" href="{{ url_for("add_list") }}" role="button">Add new list</a>
-{% endblock %}
-{% block content %}
-    <h2 class="content">Add new item</h2>
-    <form method="post" class="manager">
-      <div class="form-group">
-        <label>Todo name</label>
-        <input type="text" class="form-control" name="todo_name" placeholder="Todo name" required>
-      </div>
-      <div class="form-group">
-        <label>Due date</label>
-        <input type="date" class="form-control" name="todo_due_date" placeholder="Date input">
-      </div>
-      <div class="form-group">
-        <label>Priority</label>
-        <input type="range" name="todo_priority" min="0" max="10">
-      </div>
-      <button type="submit" class="btn btn-default button-max-width">Submit</button>
-    </form>
-{% endblock %}
+<form method="post" class="manager">
+    <fieldset>
+        <legend><h2 class="content">Add Todo in list: {{ choosed_list.name }}</h2></legend>
+            <div class="form-group">
+                <label for="todo_name">Todo name</label>
+                <input type="text" class="form-control" name="todo_name" id="todo_name_submit" placeholder="Todo name" autofocus required>
+            </div>
+            <div class="form-group">
+                <label for="todo_due_date">Due date</label>
+                <input type="date" class="form-control" name="todo_due_date" id="todo_due_date_submit" placeholder="Todo Due Date">
+            </div>
+            <div class="form-group">
+                <label for="todo_priority">Priority</label>
+                <input type="range" name="todo_priority" min="0" max="10" id="todo_priority_submit" placeholder="Todo Priority">
+            </div>
+            <button type="submit" class="btn btn-default button-max-width" id="add_todo_submit_{{ choosed_list.id }}">Add Todo</button>
+    </fieldset>
+</form>

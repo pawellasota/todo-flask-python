@@ -1,6 +1,5 @@
-db/
 # Created by https://www.gitignore.io/api/python
-
+db.sqlite
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
