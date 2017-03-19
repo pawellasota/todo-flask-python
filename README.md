@@ -24,6 +24,7 @@ Manager is able to assign or remove particular list to user.
    * [todo.py](./models/todo.py)
    * [todo_list.py](./models/todo_list.py)
    * [user.py](./models/user.py)
+   * [db.py](./models/db.py)
  * [db](./db)
    * [db.sqlite](./db/db.sqlite)
    * [script.sql](./db/script.sql)
@@ -31,21 +32,23 @@ Manager is able to assign or remove particular list to user.
    * [css](./static/css)
      * [style.css](./css/style.css)
    * [img](./static/img)
-     * [login.png](./static/img)
-     * [logo-large.png](./static/img)
-     * [ok.png](./static/img)
-     * [user.png](./static/img)
+     * [login.png](./static/img/login.png)
+     * [logo-large.png](./static/img/logo-large.png)
+     * [ok.png](./static/img/ok.png)
+     * [user.png](./static/img/user.png)
    * [js](./static/)
-     * [main.js](./static/js)
-   * [templates](./static/templates)
-     * [add_item.html](./static/templates)
-     * [add_list.html](./static/templates)
-     * [base.html](./static/templates)
-     * [edit_todo.html](./static/templates)
-     * [index.html](./static/templates)
-     * [lists.html](./static/templates)
-     * [login.html](./static/templates)
-     * [manager.html](./static/templates)
+     * [main.js](./static/js/main.js)
+   * [templates](./templates)
+     * [add_item.html](./templates/add_item.html)
+     * [404.html](./templates/404.html)
+     * [add_list.html](./templates/add_list.html)
+     * [base.html](./templates/base.html)
+     * [edit_todo.html](./templates/edit_todo.html)
+     * [lists.html](./templates/lists.html)
+     * [login.html](./templates/login.html)
+     * [manager.html](./templates/manager.html)
+     * [show_lists.html](./templates/show_lists.html)
+     * [list_todo_items.html](./templates/list_todo_items.html)
 * [main.py](./main.py)
 * [README.md](./README.md)
 
@@ -59,12 +62,21 @@ this is file where routes are defined as well.
 * /templates - this is where html templates for flask routes are stored
 
 
-Included modules support
+Required modules to pre-install
 
-* Flask — base framework for everything.
+* Flask — microframework for Python based on Werkzeug and Jinja 2 
+    
+    
+    $ pip install Flask
 * JSGlue - provide a Flask object with methods to handle url_for in JavaScript
 
 
+    $ pip install Flask-JSGlue
+* flask_sqlalchemy — Flask microframework extension which adds support for the SQLAlchemy SQL toolkit/ORM.
+
+
+    $ pip install flask-sqlalchemy
+    
 #Getting Started
 
 To get started, you'll want to first clone this GitHub repository locally:
