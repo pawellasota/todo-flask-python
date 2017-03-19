@@ -13,10 +13,11 @@ class User:
     """
     path = 'db/db.sqlite'
 
-    def __init__(self, user_id, username, password, type):
+    def __init__(self, user_id, username, password, list_allowed_id, type):
         self.user_id = user_id
         self.username = username
         self.password = password
+        self.list_allowed_id = list_allowed_id
         self.type = type
 
     @classmethod
@@ -34,9 +35,9 @@ class User:
         for row in cursor.fetchall():
             if row[1] == login and row[2] == password:
                 conn.close()
-                if row[3] == "manager":
-                    return Manager(row[0], row[1], row[2], row[3])
-                return User(row[0], row[1], row[2], row[3])
+                if row[4] == "manager":
+                    return Manager(row[0], row[1], row[2], row[3], row[4])
+                return User(row[0], row[1], row[2], row[3], row[4])
         conn.close()
         return None
 
@@ -48,8 +49,8 @@ class User:
         conn = sqlite3.connect(cls.path)
         cursor = conn.execute("SELECT * FROM users")
         for row in cursor.fetchall():
-            if row[3] == "user":
-                list_users.append(User(row[0], row[1], row[2], row[3]))
+            if row[4] == "user":
+                list_users.append(User(row[0], row[1], row[2], row[3], row[4]))
         conn.close()
         return list_users
 
@@ -93,8 +94,8 @@ class Manager(User):
             password (str): password of user
             type (str): Manager or User
     """
-    def __init__(self, user_id, username, password, type):
-        super().__init__(user_id, username, password, type)
+    def __init__(self, user_id, username, password, list_allowed_id, type):
+        super().__init__(user_id, username, password, list_allowed_id, type)
 
     def get_user_list_names(self, user_id):
         """ Returns list of user TodoLists names
